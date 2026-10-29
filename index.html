@@ -35,7 +35,9 @@
     .paper-video { float:right; width:min(42%, 280px); margin:0 0 18px 26px; border-radius:10px; background:#202a2e; box-shadow:0 8px 24px rgba(32,42,46,.12); }
     #content::after { display:block; clear:both; content:""; }
     footer { padding:22px 0 34px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
-    footer p { margin:0; }
+    footer p { margin:0 0 10px; }
+    .footer-links { display:flex; flex-wrap:wrap; gap:4px 18px; }
+    .footer-links a { color:var(--muted); }
     [data-hover-video] { cursor:default; }
     @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
@@ -61,13 +63,6 @@
 <p>My PhD is funded by the <a href="https://www.mdsi.tum.de/gni/startseite/">TUM Georg Nemetschek Institute</a> through <a href="https://www.mdsi.tum.de/gni/gni-funded-projects/thermostat/">ThermoStat</a>, a project connecting causal modeling with human thermal physiology and thermal comfort in buildings.</p>
 <p>I studied mathematics in Bonn, where I fell in love with graph theory, and later completed my master’s at TUM. During that time, reading <a href="https://en.wikipedia.org/wiki/The_Book_of_Why"><em>The Book of Why</em></a> sparked my interest in causality. Much of what keeps me in research is the pleasure of an unexpected connection or an idea suddenly making sense. Alongside that book, <a href="https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm">Kosaraju’s algorithm</a> and <a href="https://en.wikipedia.org/wiki/Stein_discrepancy">Stein discrepancies</a> belong to my personal collection of “aha” moments.</p>
 <p>Outside research, I enjoy hiking, cycling and skiing, preferably in the mountains. I am also curious about <a href="https://en.wikipedia.org/wiki/%27Pataphysics">’pataphysics</a>—something I would like to find more time to explore.</p>
-<h2 id="elsewhere">Elsewhere</h2>
-<ul>
-<li><a href="https://scholar.google.de/citations?user=Kp9tLXgAAAAJ&amp;hl=de">Google Scholar</a></li>
-<li><a href="https://www.linkedin.com/in/fabian-b-a7519a16/">LinkedIn</a></li>
-<li><a href="https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenGruppe=3&amp;pPersonenId=21FD226BAA00CDD7">Official TUM profile</a></li>
-<li><a href="https://github.com/fbleile?tab=repositories">GitHub repositories</a></li>
-</ul>
 <h2 id="publications">Publications</h2>
 <h3 id="efficient-learning-of-stationary-diffusions-with-stein-type-discrepancies">Efficient Learning of Stationary Diffusions with Stein-type Discrepancies</h3>
 <video class="paper-video" data-hover-video src="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4" poster="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
@@ -78,7 +73,7 @@
 <p><em><a href="projects/train_routing/Final-Presentation-CSTR.pptx">Presentation</a> · TUM Case Study with Siemens 2024 · with Sándor Daróczi, Simon Ramoser and Tobias Müller</em></p>
 <h2 id="cv">CV</h2>
 <p><a href="cv/Fabian-Bleile-CV.pdf">Download my curriculum vitae</a></p></article></main>
-  <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p></div></footer>
+  <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p><div class="footer-links"><a href="https://scholar.google.de/citations?user=Kp9tLXgAAAAJ&amp;hl=de">Google Scholar</a><a href="https://www.linkedin.com/in/fabian-b-a7519a16/">LinkedIn</a><a href="https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenGruppe=3&amp;pPersonenId=21FD226BAA00CDD7">TUM profile</a><a href="https://github.com/fbleile?tab=repositories">GitHub</a></div></div></footer>
   <script>
     document.querySelectorAll('[data-hover-video]').forEach((video) => {
       video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });

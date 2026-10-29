@@ -35,7 +35,9 @@
     .paper-video { float:right; width:min(42%, 280px); margin:0 0 18px 26px; border-radius:10px; background:#202a2e; box-shadow:0 8px 24px rgba(32,42,46,.12); }
     #content::after { display:block; clear:both; content:""; }
     footer { padding:22px 0 34px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
-    footer p { margin:0; }
+    footer p { margin:0 0 10px; }
+    .footer-links { display:flex; flex-wrap:wrap; gap:4px 18px; }
+    .footer-links a { color:var(--muted); }
     [data-hover-video] { cursor:default; }
     @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
@@ -56,7 +58,7 @@
     </div>
   </header>
   <main id="top" class="shell"><article id="content">__CONTENT__</article></main>
-  <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p></div></footer>
+  <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p><div class="footer-links"><a href="https://scholar.google.de/citations?user=Kp9tLXgAAAAJ&amp;hl=de">Google Scholar</a><a href="https://www.linkedin.com/in/fabian-b-a7519a16/">LinkedIn</a><a href="https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenGruppe=3&amp;pPersonenId=21FD226BAA00CDD7">TUM profile</a><a href="https://github.com/fbleile?tab=repositories">GitHub</a></div></div></footer>
   <script>
     document.querySelectorAll('[data-hover-video]').forEach((video) => {
       video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });
