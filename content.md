@@ -19,6 +19,8 @@ In my free time I very much enjoy going to the mountains, hiking, cycling, skiin
 
 ### Efficient Learning of Stationary Diffusions with Stein-type Discrepancies
 
+{{video:media/StationaryDiffusionTeaser.mp4}}
+
 *[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · 2026 · with Sarah Lumpp and Mathias Drton*
 
 ## CV

@@ -32,8 +32,12 @@
     h3 { margin:30px 0 8px; font-size:1.2rem; }
     p { margin:0 0 18px; }
     ul { margin:0 0 22px; padding-left:24px; }
+    .paper-video { float:right; width:min(42%, 280px); margin:0 0 18px 26px; border-radius:10px; background:#202a2e; box-shadow:0 8px 24px rgba(32,42,46,.12); }
+    #content::after { display:block; clear:both; content:""; }
     footer { padding:22px 0 34px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
     footer p { margin:0; }
+    [data-hover-video] { cursor:default; }
+    @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
       .shell { width:min(calc(100% - 28px), var(--max)); }
       .masthead { display:block; }
@@ -63,9 +67,16 @@
 <p>In my free time I very much enjoy going to the mountains, hiking, cycling, skiing. I&#x27;d love to know more about <a href="https://en.wikipedia.org/wiki/%27Pataphysics">&#x27;Pataphysics</a> as the logic of the outliers.</p>
 <h2 id="publications">Publications</h2>
 <h3 id="efficient-learning-of-stationary-diffusions-with-stein-type-discrepancies">Efficient Learning of Stationary Diffusions with Stein-type Discrepancies</h3>
+<video class="paper-video" data-hover-video src="media/StationaryDiffusionTeaser.mp4" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
 <p><em><a href="https://proceedings.mlr.press/v300/bleile26a.html">Paper</a> · 2026 · with Sarah Lumpp and Mathias Drton</em></p>
 <h2 id="cv">CV</h2>
 <p>My background includes research, software development, and collaboration across technical and scientific disciplines. A full curriculum vitae, links to code, and further details will be added here soon.</p></article></main>
   <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p></div></footer>
+  <script>
+    document.querySelectorAll('[data-hover-video]').forEach((video) => {
+      video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });
+      video.addEventListener('pointerleave', () => { video.pause(); video.currentTime = 0; });
+    });
+  </script>
 </body>
 </html>

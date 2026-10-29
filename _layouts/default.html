@@ -32,8 +32,12 @@
     h3 { margin:30px 0 8px; font-size:1.2rem; }
     p { margin:0 0 18px; }
     ul { margin:0 0 22px; padding-left:24px; }
+    .paper-video { float:right; width:min(42%, 280px); margin:0 0 18px 26px; border-radius:10px; background:#202a2e; box-shadow:0 8px 24px rgba(32,42,46,.12); }
+    #content::after { display:block; clear:both; content:""; }
     footer { padding:22px 0 34px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
     footer p { margin:0; }
+    [data-hover-video] { cursor:default; }
+    @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
       .shell { width:min(calc(100% - 28px), var(--max)); }
       .masthead { display:block; }
@@ -53,5 +57,11 @@
   </header>
   <main id="top" class="shell"><article id="content">__CONTENT__</article></main>
   <footer><div class="shell"><p>© 2026 Fabian Bleile · <a href="#top">Back to top</a></p></div></footer>
+  <script>
+    document.querySelectorAll('[data-hover-video]').forEach((video) => {
+      video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });
+      video.addEventListener('pointerleave', () => { video.pause(); video.currentTime = 0; });
+    });
+  </script>
 </body>
 </html>

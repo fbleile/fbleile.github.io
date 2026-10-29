@@ -27,12 +27,21 @@ def markdown_to_html(markdown: str) -> str:
             continue
         heading = re.match(r'^(#{1,3})\s+(.+)$', line)
         item = re.match(r'^[-*]\s+(.+)$', line)
+        video = re.fullmatch(r'\{\{video:([^}]+)\}\}', line)
         if heading:
             close_list()
             level = len(heading.group(1))
             text = heading.group(2)
             slug = re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
             output.append(f'<h{level} id="{slug}">{inline(text)}</h{level}>')
+        elif video:
+            close_list()
+            source = escape(video.group(1).strip(), quote=True)
+            output.append(
+                f'<video class="paper-video" data-hover-video src="{source}" '
+                'muted loop playsinline preload="metadata" '
+                'aria-label="Publication video preview"></video>'
+            )
         elif item:
             if not list_open:
                 output.append('<ul>')
