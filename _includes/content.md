@@ -1,23 +1,47 @@
-# Ideas, methods, and work in progress.
+# Research, methods, and work in progress
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. This personal website is a home for research, collaborations, open-source work, and the questions behind them. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+I am a researcher interested in how data, algorithms, and careful scientific reasoning can help us understand complex systems. My work sits at the intersection of causal inference, machine learning, and computational science, with a particular focus on methods that are transparent, reproducible, and useful in practice.
+
+This website collects a few of those interests, together with notes on current projects, publications, and software. It is intentionally a work in progress.
 
 ## About
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+I enjoy working on questions where theory and computation meet: how can we learn meaningful structure from observational data? How should algorithms behave when assumptions are only approximately true? And how can research software make complex methods easier to inspect, reproduce, and extend?
+
+I am especially motivated by collaborative work that connects mathematical ideas with real applications. Outside of research, I enjoy building small tools, writing clear documentation, and turning exploratory code into reliable workflows.
 
 ## Research
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. My work explores how careful questions, transparent methods, and computational tools can help us understand complex systems. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+My current interests include:
 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-- Duis aute irure dolor in reprehenderit in voluptate velit esse.
+- causal discovery and structure learning
+- robust and scalable machine-learning methods
+- reproducible scientific computing
+- open-source software for data analysis
+- the relationship between assumptions, algorithms, and evidence
 
 ## Publications
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Selected publications, preprints, talks, and other research outputs will be listed here as they become available.
+The entries below are temporary draft examples and should be replaced with the final publication list.
+
+### Reliable structure learning under distribution shift
+
+*Draft article · 2026 · with collaborators*
+
+An example research contribution on evaluating graph-learning methods when the data-generating process changes across environments.
+
+### Making causal methods easier to reproduce
+
+*Draft software note · 2025 · open-source project*
+
+An example software-oriented contribution focused on benchmarks, transparent implementations, and practical diagnostics for causal analysis.
+
+### From algorithms to scientific workflows
+
+*Draft conference contribution · 2024 · with collaborators*
+
+An example presentation of computational methods designed to connect methodological development with reliable scientific practice.
 
 ## CV
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. A curriculum vitae and additional background information will be added here.
+My background includes research, software development, and collaboration across technical and scientific disciplines. A full curriculum vitae, links to code, and further details will be added here soon.
