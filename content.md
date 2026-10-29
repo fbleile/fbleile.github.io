@@ -16,7 +16,7 @@ Outside research, I enjoy hiking, cycling and skiing, preferably in the mountain
 
 {{video:publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4}}
 
-*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
+*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · [Idyll notebook](notebooks/efficient-learning-stationary-diffusions/build/index.html) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
 
 ## Other Projects
 
@@ -27,7 +27,5 @@ Outside research, I enjoy hiking, cycling and skiing, preferably in the mountain
 *[Presentation](projects/train_routing/Final-Presentation-CSTR.pptx) · TUM Case Study with Siemens 2024 · with Sándor Daróczi, Simon Ramoser and Tobias Müller*
 
 ## CV
-
-My background includes research, software development, and collaboration across technical and scientific disciplines.
 
 [Download my curriculum vitae](cv/Fabian-Bleile-CV.pdf)
