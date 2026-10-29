@@ -1,10 +1,8 @@
-# Research, methods, and work in progress
+## About Me
 
 I am a researcher interested in how data, algorithms, and careful scientific reasoning can help us understand complex systems. My work sits at the intersection of causal inference, machine learning, and computational science, with a particular focus on methods that are transparent, reproducible, and useful in practice.
 
 This website collects a few of those interests, together with notes on current projects, publications, and software. It is intentionally a work in progress.
-
-## About
 
 I enjoy working on questions where theory and computation meet: how can we learn meaningful structure from observational data? How should algorithms behave when assumptions are only approximately true? And how can research software make complex methods easier to inspect, reproduce, and extend?
 

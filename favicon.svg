@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Fabian Bleile — causal graph</title>
+  <rect width="64" height="64" rx="14" fill="#202a2e"/>
+  <g fill="none" stroke="#7fc9bd" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 21 31 31M33 31 48 18M33 34 48 46" stroke-width="3"/>
+    <path d="M17 48c4-8 7 8 11 0s7 8 11 0 7 5 10-1" stroke="#f1c878" stroke-width="2.5" stroke-dasharray="1 4"/>
+  </g>
+  <g fill="#f7fbf9" stroke="#202a2e" stroke-width="2">
+    <circle cx="15" cy="19" r="6"/>
+    <circle cx="32" cy="32" r="6"/>
+    <circle cx="50" cy="17" r="6"/>
+    <circle cx="50" cy="48" r="6"/>
+  </g>
+  <g fill="#7fc9bd">
+    <path d="m24 27 5 1-3 4z"/>
+    <path d="m42 20 5-3-1 5z"/>
+    <path d="m42 44 5 3-5 1z"/>
+  </g>
+</svg>
