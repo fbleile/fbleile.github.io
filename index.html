@@ -1,60 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to TUM Profile</title>
-
-    <script data-goatcounter="https://fbleile.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
-
-    <noscript>
-        <img src="https://fbleile.goatcounter.com/count?p=/index&t=RedirectNoJS">
-    </noscript>
-    <img src="https://fbleile.goatcounter.com/count?p=/index&t=Redirect" style="display:none">
-
-    <meta http-equiv="refresh" content="2; url=https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenId=21FD226BAA00CDD7&pPersonenGruppe=3">
-    
-    <script type="text/javascript">
-        setTimeout(function() {
-            window.location.href = "https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenId=21FD226BAA00CDD7&pPersonenGruppe=3";
-        }, 2000);
-    </script>
-
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        .container { text-align: center; }
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0065BD; /* TUM Blue */
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        a { color: #0065BD; text-decoration: none; font-weight: 500; }
-        a:hover { text-decoration: underline; }
-        p { font-size: 14px; color: #666; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="F. Bleile — research, projects, publications, and software.">
+  <title>F. Bleile — Research &amp; Projects</title>
+  <script data-goatcounter="https://fbleile.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <noscript><img src="https://fbleile.goatcounter.com/count?p=/index&amp;t=NoScript" alt=""></noscript>
+  <style>
+    :root { --ink:#1e2c35; --muted:#617078; --line:#d9e1e3; --paper:#fbfcfa; --wash:#edf4f1; --accent:#19796f; --accent-dark:#105b54; --max:1040px; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.7 Georgia, 'Times New Roman', serif; }
+    a { color:var(--accent-dark); text-underline-offset:3px; }
+    a:hover { color:var(--accent); }
+    .shell { width:min(calc(100% - 40px), var(--max)); margin:0 auto; }
+    header { border-bottom:1px solid var(--line); }
+    .masthead { display:flex; align-items:baseline; justify-content:space-between; gap:24px; padding:30px 0 20px; }
+    .name { color:var(--ink); font-size:clamp(1.6rem, 3vw, 2.3rem); font-weight:700; text-decoration:none; letter-spacing:-.03em; }
+    .role { margin:0; color:var(--muted); font-size:.98rem; }
+    nav { display:flex; flex-wrap:wrap; gap:6px 24px; padding:0 0 18px; }
+    nav a { color:var(--muted); font-size:.94rem; text-decoration:none; }
+    nav a:hover { color:var(--accent-dark); }
+    main { padding:72px 0 90px; }
+    .intro { display:grid; grid-template-columns:1.2fr .8fr; gap:72px; align-items:end; padding-bottom:80px; }
+    .eyebrow { margin:0 0 18px; color:var(--accent); font:700 .78rem/1.2 system-ui,sans-serif; letter-spacing:.15em; text-transform:uppercase; }
+    h1,h2,h3 { line-height:1.15; letter-spacing:-.025em; }
+    h1 { max-width:680px; margin:0; font-size:clamp(2.7rem, 6vw, 5.5rem); font-weight:400; }
+    .lead { max-width:640px; margin:28px 0 0; color:var(--muted); font-size:1.18rem; }
+    .intro-note { border-left:3px solid var(--accent); padding:4px 0 4px 24px; color:var(--muted); }
+    .intro-note p { margin:0 0 14px; }
+    .intro-note p:last-child { margin-bottom:0; }
+    section { border-top:1px solid var(--line); padding:48px 0 64px; }
+    .section-heading { display:flex; justify-content:space-between; gap:24px; align-items:baseline; }
+    h2 { margin:0 0 28px; font-size:2rem; font-weight:400; }
+    .section-kicker { margin:0; color:var(--muted); font:.82rem system-ui,sans-serif; }
+    .columns { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .card { padding:24px; background:var(--wash); }
+    .card h3 { margin:0 0 10px; font-size:1.25rem; font-weight:700; }
+    .card p { margin:0; color:var(--muted); }
+    .placeholder { color:var(--muted); font-style:italic; }
+    .contact { display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+    .contact p { margin:0 0 10px; }
+    footer { border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; padding:24px 0 36px; }
+    footer p { margin:0; }
+    @media (max-width:720px) {
+      .shell { width:min(calc(100% - 28px), var(--max)); }
+      .masthead { display:block; padding-top:22px; }
+      .role { margin-top:4px; }
+      nav { gap:7px 16px; padding-top:18px; }
+      main { padding-top:48px; }
+      .intro,.contact { grid-template-columns:1fr; gap:32px; padding-bottom:56px; }
+      .columns { grid-template-columns:1fr; }
+      h1 { font-size:clamp(2.7rem, 14vw, 4.2rem); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="spinner"></div>
-        <div style="font-weight: 500;">Redirecting to TUM profile...</div>
-        <p>If the page doesn't load, <a href="https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenId=21FD226BAA00CDD7&pPersonenGruppe=3">click here</a>.</p>
+  <header>
+    <div class="shell">
+      <div class="masthead"><a class="name" href="#top">F. Bleile</a><p class="role">Researcher · Scientist · Builder</p></div>
+      <nav aria-label="Primary navigation">
+        <a href="#about">About</a><a href="#research">Research</a><a href="#projects">Projects</a><a href="#publications">Publications</a><a href="#software">Software</a><a href="#cv">CV</a><a href="#contact">Contact</a>
+      </nav>
     </div>
+  </header>
+  <main id="top" class="shell">
+    <section id="about" class="intro" style="border-top:0;padding-top:0;">
+      <div><p class="eyebrow">Welcome</p><h1>Ideas, methods, and work in progress.</h1><p class="lead">This is the personal website of F. Bleile. A home for research, collaborations, open-source work, and the questions behind them.</p></div>
+      <aside class="intro-note"><p><strong>Currently:</strong> <span class="placeholder">Add a short description of your current role, affiliation, or focus here.</span></p><p><a href="https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenId=21FD226BAA00CDD7&amp;pPersonenGruppe=3">TUM profile</a></p></aside>
+    </section>
+    <section id="research"><div class="section-heading"><h2>Research</h2><p class="section-kicker">What I’m exploring</p></div><div class="columns"><article class="card"><h3>Core question</h3><p class="placeholder">Add the central question or problem that motivates your work.</p></article><article class="card"><h3>Methods</h3><p class="placeholder">Describe the methods, tools, or perspective you bring to it.</p></article><article class="card"><h3>In the world</h3><p class="placeholder">Share why this work matters beyond the immediate project.</p></article></div></section>
+    <section id="projects"><div class="section-heading"><h2>Projects</h2><p class="section-kicker">Selected work</p></div><p class="placeholder">Projects will appear here as they are added.</p></section>
+    <section id="publications"><div class="section-heading"><h2>Publications</h2><p class="section-kicker">Writing &amp; results</p></div><p class="placeholder">Add publications, preprints, talks, or other research outputs here.</p></section>
+    <section id="software"><div class="section-heading"><h2>Software</h2><p class="section-kicker">Tools &amp; code</p></div><p class="placeholder">Add links to software, packages, datasets, or useful technical notes here.</p></section>
+    <section id="cv"><div class="section-heading"><h2>CV</h2><p class="section-kicker">Background</p></div><p class="placeholder">A downloadable CV can be linked here once it is ready.</p></section>
+    <section id="contact" class="contact"><div><div class="section-heading"><h2>Contact</h2></div><p class="placeholder">Add the best way for people to reach you.</p></div><div><p><a href="mailto:your.email@example.com">your.email@example.com</a></p><p class="placeholder">Affiliation · City · Country</p></div></section>
+  </main>
+  <footer><div class="shell"><p>© 2026 F. Bleile · <a href="#top">Back to top</a></p></div></footer>
 </body>
 </html>
