@@ -10,6 +10,13 @@ I studied mathematics in Bonn, where I fell in love with graph theory, and later
 
 Outside research, I enjoy hiking, cycling and skiing, preferably in the mountains. I am also curious about [’pataphysics](https://en.wikipedia.org/wiki/%27Pataphysics)—something I would like to find more time to explore.
 
+## Elsewhere
+
+- [Google Scholar](https://scholar.google.de/citations?user=Kp9tLXgAAAAJ&hl=de)
+- [LinkedIn](https://www.linkedin.com/in/fabian-b-a7519a16/)
+- [Official TUM profile](https://campus.tum.de/tumonline/visitenkarte.show_vcard?pPersonenGruppe=3&pPersonenId=21FD226BAA00CDD7)
+- [GitHub repositories](https://github.com/fbleile?tab=repositories)
+
 ## Publications
 
 ### Efficient Learning of Stationary Diffusions with Stein-type Discrepancies
