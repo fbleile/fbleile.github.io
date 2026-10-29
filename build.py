@@ -5,7 +5,7 @@ import re
 
 def inline(text: str) -> str:
     rendered = escape(text)
-    rendered = re.sub(r'\[([^\]]+)\]\((https?://[^\s)]+)\)', r'<a href="\2">\1</a>', rendered)
+    rendered = re.sub(r'\[([^\]]+)\]\(([^\s)]+)\)', r'<a href="\2">\1</a>', rendered)
     rendered = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', rendered)
     return re.sub(r'\*([^*]+)\*', r'<em>\1</em>', rendered)
 
