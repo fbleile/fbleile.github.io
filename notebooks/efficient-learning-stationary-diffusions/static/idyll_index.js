@@ -39161,7 +39161,7 @@ pre {
   components["h2"] = import_h2.default;
   components["skds-explorer"] = skds_explorer_default;
   var datasets = {};
-  var opts = { "ssr": true, "theme": "idyll", "layout": "centered", "authorView": false };
+  var opts = { "ssr": false, "theme": "idyll", "layout": "centered", "authorView": false };
   var layout = opts.layout;
   var theme = opts.theme;
   var authorView = opts.authorView;

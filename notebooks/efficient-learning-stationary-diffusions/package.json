@@ -6,7 +6,8 @@
     "theme": "idyll",
     "layout": "centered",
     "css": "styles.css",
-    "authorView": false
+    "authorView": false,
+    "ssr": false
   },
   "type": "module",
   "scripts": {
