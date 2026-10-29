@@ -28,4 +28,6 @@ Outside research, I enjoy hiking, cycling and skiing, preferably in the mountain
 
 ## CV
 
-My background includes research, software development, and collaboration across technical and scientific disciplines. A full curriculum vitae, links to code, and further details will be added here soon.
+My background includes research, software development, and collaboration across technical and scientific disciplines.
+
+[Download my curriculum vitae](cv/Fabian-Bleile-CV.pdf)
