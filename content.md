@@ -1,44 +1,25 @@
 ## About Me
 
-I am a researcher interested in how data, algorithms, and careful scientific reasoning can help us understand complex systems. My work sits at the intersection of causal inference, machine learning, and computational science, with a particular focus on methods that are transparent, reproducible, and useful in practice.
+I am a PhD candidate at TU Munich, started in 2027 under the supervision by [Mathias Drton](https://www.professoren.tum.de/en/drton-mathias).
+My work sits at the intersection of causality and machine learning. Currently, I am very much interested in stationary diffusions as graphical models.
+These are dynamical systems that equilibrate in infinite time. Cyclic dependences between variables can be resolved in time in this way. At the same time the equilibrated or stationary distribution is time-invariant.
+To me this is a natural way of thinking about cycles in causality without introducing time for the modeled distribution.
+Cycles have been a central interest of mine right from when I learned about causality.
 
-This website collects a few of those interests, together with notes on current projects, publications, and software. It is intentionally a work in progress.
+My PhD is funded by the [TUM Georg Nemetschek Institute](https://www.mdsi.tum.de/gni/startseite/) within the project [ThermoStat](https://www.mdsi.tum.de/gni/gni-funded-projects/thermostat/) until 2030.
 
-I enjoy working on questions where theory and computation meet: how can we learn meaningful structure from observational data? How should algorithms behave when assumptions are only approximately true? And how can research software make complex methods easier to inspect, reproduce, and extend?
+I am doing research / extending my studies for the Eureka moments. This is a small collection of things that gave me the 'aww' when I learned about them: [Kosaraju's algorithm](https://en.wikipedia.org/wiki/Kosaraju's_algorithm), [Book of Why](https://en.wikipedia.org/wiki/The_Book_of_Why) and [Stein Discrepancies](https://en.wikipedia.org/wiki/Stein_discrepancy).
 
-I am especially motivated by collaborative work that connects mathematical ideas with real applications. Outside of research, I enjoy building small tools, writing clear documentation, and turning exploratory code into reliable workflows.
+I did my bachelors in Bonn and fell head over heals for graph theory (graph scanning, shortest paths, graph colorings, ...). To broaden the view I did my masters at TU Munich and at the same time learned about causality in the book of why.
 
-## Research
+In my free time I very much enjoy going to the mountains, hiking, cycling, skiing. I'd love to know more about ['Pataphysics](https://en.wikipedia.org/wiki/%27Pataphysics) as the logic of the outliers.
 
-My current interests include:
-
-- causal discovery and structure learning
-- robust and scalable machine-learning methods
-- reproducible scientific computing
-- open-source software for data analysis
-- the relationship between assumptions, algorithms, and evidence
 
 ## Publications
 
-The entries below are temporary draft examples and should be replaced with the final publication list.
+### Efficient Learning of Stationary Diffusions with Stein-type Discrepancies
 
-### Reliable structure learning under distribution shift
-
-*Draft article · 2026 · with collaborators*
-
-An example research contribution on evaluating graph-learning methods when the data-generating process changes across environments.
-
-### Making causal methods easier to reproduce
-
-*Draft software note · 2025 · open-source project*
-
-An example software-oriented contribution focused on benchmarks, transparent implementations, and practical diagnostics for causal analysis.
-
-### From algorithms to scientific workflows
-
-*Draft conference contribution · 2024 · with collaborators*
-
-An example presentation of computational methods designed to connect methodological development with reliable scientific practice.
+*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · 2026 · with Sarah Lumpp and Mathias Drton*
 
 ## CV
 
