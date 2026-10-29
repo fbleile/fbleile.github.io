@@ -16,7 +16,7 @@ Outside research, I enjoy hiking, cycling and skiing, preferably in the mountain
 
 {{video:publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4}}
 
-*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Presentation](publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · [Idyll notebook](notebooks/efficient-learning-stationary-diffusions/build/index.html?v=d6bb172) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
+*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Presentation](publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · [Idyll notebook](notebooks/efficient-learning-stationary-diffusions/index.html?v=a58e30f) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
 
 ## Other Projects
 
