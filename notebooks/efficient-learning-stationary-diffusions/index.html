@@ -1,22 +1,30 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!doctype html>
+<html lang="en">
   <head>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
-    />
-    <title>Efficient Learning of Stationary Diffusions</title>
-    <meta property="og:title" content="Efficient Learning of Stationary Diffusions" />
     <meta charset="utf-8" />
-    <meta property="og:type" content="article" />
-
-    <meta property="og:description" content="An interactive introduction to the Stein-Type Kernel Deviation from Stationarity." />
-    <meta property="description" content="An interactive introduction to the Stein-Type Kernel Deviation from Stationarity." />
-
-    <link rel="stylesheet" href="static/idyll_styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SKDS Explorer</title>
+    <style>
+      :root { color: #202a2e; background: #f5f7f6; font-family: system-ui, sans-serif; }
+      main { max-width: 760px; margin: 4rem auto; padding: 2rem; background: white; border-radius: 14px; box-shadow: 0 8px 30px #202a2e18; }
+      h1 { margin-top: 0; }
+      .status { padding: 1rem; background: #e3f2ef; border-left: 4px solid #176b63; }
+      button { padding: .65rem 1rem; border: 0; border-radius: 6px; background: #176b63; color: white; cursor: pointer; }
+      output { display: inline-block; margin-left: 1rem; font-weight: 700; }
+    </style>
   </head>
   <body>
-    <div id="idyll-mount"></div>
-    <script src="static/idyll_index.js?v=ssr-false"></script>
+    <main>
+      <h1>SKDS Explorer</h1>
+      <p class="status">This is the new standalone notebook test page — not the default Idyll article.</p>
+      <p>The local page is loading the correct publication notebook path.</p>
+      <button id="test-button" type="button">Test interaction</button>
+      <output id="test-output">Waiting for a click.</output>
+    </main>
+    <script>
+      document.getElementById('test-button').addEventListener('click', () => {
+        document.getElementById('test-output').textContent = 'JavaScript is working.';
+      });
+    </script>
   </body>
 </html>
