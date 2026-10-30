@@ -42,7 +42,7 @@
     footer p { margin:0 0 10px; }
     .footer-links { display:flex; flex-wrap:wrap; gap:4px 18px; }
     .footer-links a { color:var(--muted); }
-    [data-hover-video] { cursor:default; }
+    [data-hover-video] { cursor:pointer; }
     @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
       .shell { width:min(calc(100% - 28px), var(--max)); }
@@ -67,14 +67,14 @@
 <p>My research connects causal inference, graphical models and stochastic dynamics. I am particularly interested in stationary diffusions: stochastic differential equations whose stationary distributions can model observations at equilibrium. Their dynamics allow feedback between variables, while the modeled distribution remains time-invariant. This is what draws me to them: a way to study causal cycles through the dynamics underlying equilibrium observations. Cycles have fascinated me since I first encountered causal inference.</p>
 <p>My PhD is funded by the <a href="https://www.mdsi.tum.de/gni/startseite/">TUM Georg Nemetschek Institute</a> through <a href="https://www.mdsi.tum.de/gni/gni-funded-projects/thermostat/">ThermoStat</a>, a project connecting causal modeling with human thermal physiology and thermal comfort in buildings.</p>
 <p>I studied mathematics in Bonn, where I fell in love with graph theory, and later completed my master’s at TUM. During that time, reading <a href="https://en.wikipedia.org/wiki/The_Book_of_Why"><em>The Book of Why</em></a> sparked my interest in causality. Much of what keeps me in research is the pleasure of an unexpected connection or an idea suddenly making sense. Alongside that book, <a href="https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm">Kosaraju’s algorithm</a> and <a href="https://en.wikipedia.org/wiki/Stein_discrepancy">Stein discrepancies</a> belong to my personal collection of “aha” moments.</p>
-<p>Outside research, I enjoy hiking, cycling and skiing, preferably in the mountains. I am also curious about <a href="https://en.wikipedia.org/wiki/%27Pataphysics">’pataphysics</a>—something I would like to find more time to explore.</p>
+<p>Outside research, I enjoy hiking, cycling and skiing. I am also curious about <a href="https://en.wikipedia.org/wiki/%27Pataphysics">’pataphysics</a>—something I would like to find more time to explore.</p>
 <h2 id="publications">Publications</h2>
 <h3 id="efficient-learning-of-stationary-diffusions-with-stein-type-discrepancies">Efficient Learning of Stationary Diffusions with Stein-type Discrepancies</h3>
-<video class="paper-video" data-hover-video src="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4" poster="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
+<video class="paper-video" data-hover-video tabindex="0" role="button" src="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4" poster="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
 <p><em><a href="https://proceedings.mlr.press/v300/bleile26a.html">Paper</a> · <a href="publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf">Presentation</a> · <a href="publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf">Poster</a> · <a href="notebooks/efficient-learning-stationary-diffusions/">Idyll notebook</a> · AISTATS 2026 · with Sarah Lumpp and Mathias Drton</em></p>
 <h2 id="other-projects">Other Projects</h2>
 <h3 id="optimal-train-routing-and-scheduling">Optimal Train Routing and Scheduling</h3>
-<video class="paper-video" data-hover-video src="projects/train_routing/trainrouting.mp4" poster="projects/train_routing/trainrouting-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
+<video class="paper-video" data-hover-video tabindex="0" role="button" src="projects/train_routing/trainrouting.mp4" poster="projects/train_routing/trainrouting-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
 <p><em><a href="projects/train_routing/Final-Presentation-CSTR.pptx">Presentation</a> · TUM Case Study with Siemens 2024 · with Sándor Daróczi, Simon Ramoser and Tobias Müller</em></p>
 <h2 id="cv">CV</h2>
 <p><a href="cv/Fabian-Bleile-CV.pdf">Download my curriculum vitae</a></p></article></main>
@@ -93,8 +93,34 @@
       }, { passive: true });
     }
     document.querySelectorAll('[data-hover-video]').forEach((video) => {
-      video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });
-      video.addEventListener('pointerleave', () => { video.pause(); video.currentTime = 0; });
+      const isTouch = (event) => event.pointerType === 'touch' || event.pointerType === 'pen';
+      const updateLabel = () => {
+        video.setAttribute('aria-label', video.paused
+          ? 'Play publication video preview'
+          : 'Pause publication video preview');
+      };
+      video.addEventListener('pointerenter', (event) => {
+        if (!isTouch(event)) video.play().catch(() => {});
+      });
+      video.addEventListener('pointerleave', (event) => {
+        if (!isTouch(event)) { video.pause(); video.currentTime = 0; updateLabel(); }
+      });
+      video.addEventListener('pointerup', (event) => {
+        if (!isTouch(event)) return;
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+        updateLabel();
+      });
+      video.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+        updateLabel();
+      });
+      video.addEventListener('play', updateLabel);
+      video.addEventListener('pause', updateLabel);
+      updateLabel();
     });
   </script>
 </body>

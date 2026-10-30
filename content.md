@@ -8,7 +8,7 @@ My PhD is funded by the [TUM Georg Nemetschek Institute](https://www.mdsi.tum.de
 
 I studied mathematics in Bonn, where I fell in love with graph theory, and later completed my master’s at TUM. During that time, reading [*The Book of Why*](https://en.wikipedia.org/wiki/The_Book_of_Why) sparked my interest in causality. Much of what keeps me in research is the pleasure of an unexpected connection or an idea suddenly making sense. Alongside that book, [Kosaraju’s algorithm](https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm) and [Stein discrepancies](https://en.wikipedia.org/wiki/Stein_discrepancy) belong to my personal collection of “aha” moments.
 
-Outside research, I enjoy hiking, cycling and skiing, preferably in the mountains. I am also curious about [’pataphysics](https://en.wikipedia.org/wiki/%27Pataphysics)—something I would like to find more time to explore.
+Outside research, I enjoy hiking, cycling and skiing. I am also curious about [’pataphysics](https://en.wikipedia.org/wiki/%27Pataphysics)—something I would like to find more time to explore.
 
 ## Publications
 

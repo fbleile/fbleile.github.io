@@ -39,7 +39,7 @@ def markdown_to_html(markdown: str) -> str:
             source = escape(video.group(1).strip(), quote=True)
             poster = re.sub(r'\.[^./]+$', '-poster.jpg', source)
             output.append(
-                f'<video class="paper-video" data-hover-video src="{source}" poster="{poster}" '
+                f'<video class="paper-video" data-hover-video tabindex="0" role="button" src="{source}" poster="{poster}" '
                 'muted loop playsinline preload="metadata" '
                 'aria-label="Publication video preview"></video>'
             )

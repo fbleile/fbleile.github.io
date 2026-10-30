@@ -42,7 +42,7 @@
     footer p { margin:0 0 10px; }
     .footer-links { display:flex; flex-wrap:wrap; gap:4px 18px; }
     .footer-links a { color:var(--muted); }
-    [data-hover-video] { cursor:default; }
+    [data-hover-video] { cursor:pointer; }
     @media (max-width:520px) { .paper-video { float:none; width:100%; margin:0 0 18px; } }
     @media (max-width:620px) {
       .shell { width:min(calc(100% - 28px), var(--max)); }
@@ -78,8 +78,34 @@
       }, { passive: true });
     }
     document.querySelectorAll('[data-hover-video]').forEach((video) => {
-      video.addEventListener('pointerenter', () => { video.play().catch(() => {}); });
-      video.addEventListener('pointerleave', () => { video.pause(); video.currentTime = 0; });
+      const isTouch = (event) => event.pointerType === 'touch' || event.pointerType === 'pen';
+      const updateLabel = () => {
+        video.setAttribute('aria-label', video.paused
+          ? 'Play publication video preview'
+          : 'Pause publication video preview');
+      };
+      video.addEventListener('pointerenter', (event) => {
+        if (!isTouch(event)) video.play().catch(() => {});
+      });
+      video.addEventListener('pointerleave', (event) => {
+        if (!isTouch(event)) { video.pause(); video.currentTime = 0; updateLabel(); }
+      });
+      video.addEventListener('pointerup', (event) => {
+        if (!isTouch(event)) return;
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+        updateLabel();
+      });
+      video.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+        updateLabel();
+      });
+      video.addEventListener('play', updateLabel);
+      video.addEventListener('pause', updateLabel);
+      updateLabel();
     });
   </script>
 </body>
