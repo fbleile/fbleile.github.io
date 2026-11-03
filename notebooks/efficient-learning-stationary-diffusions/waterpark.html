@@ -172,7 +172,7 @@
         ducks.forEach(duck=>{
           const field=fieldAt(duck.x,duck.y);
           const deviation=(10+Math.random()*60)*Math.PI/180;
-          const direction=(Math.random()<.5?0:Math.PI)+(Math.random()<.5?-deviation:deviation);
+          const direction=(Math.random()<.5?-deviation:deviation);
           const kick=.06*Math.sqrt(dt);
           const noiseX=field.tangent.x*Math.cos(direction)*kick+field.normalDirection.x*Math.sin(direction)*kick;
           const noiseY=field.tangent.y*Math.cos(direction)*kick+field.normalDirection.y*Math.sin(direction)*kick;
