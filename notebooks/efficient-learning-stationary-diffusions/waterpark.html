@@ -190,11 +190,21 @@
         let first=null,second=null,firstDistance=Infinity,secondDistance=Infinity;
         imageField.boundaries.forEach(point=>{const distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);if(distance<firstDistance){second=first;secondDistance=firstDistance;first=point;firstDistance=distance;}else if(distance<secondDistance){second=point;secondDistance=distance;}});
         const angle=Math.atan2(y,x); const inner=ringRadius(angle)-riverWidth(angle); const outer=ringRadius(angle)+riverWidth(angle); const radius=Math.hypot(x,y);
-        if(radius<inner||radius>outer){const length=Math.sqrt(firstDistance)||1;return {x:(first.x-x)/length,y:(first.y-y)/length};}
+        const center=ringPoint(angle); const centerVector={x:center.x-x,y:center.y-y}; const centerLength=Math.hypot(centerVector.x,centerVector.y)||1;
+        if(radius<inner||radius>outer){
+          const length=Math.sqrt(firstDistance)||1; const inward={x:(first.x-x)/length,y:(first.y-y)/length};
+          const radial={x:first.x,y:first.y}; const radialLength=Math.hypot(radial.x,radial.y)||1;
+          let tangent={x:-radial.y/radialLength,y:radial.x/radialLength};
+          if(tangent.x*(-y)+tangent.y*x<0)tangent={x:-tangent.x,y:-tangent.y};
+          const vx=inward.x*.88+tangent.x*.12,vy=inward.y*.88+tangent.y*.12,fieldLength=Math.hypot(vx,vy)||1;
+          return {x:vx/fieldLength,y:vy/fieldLength};
+        }
         const chord={x:second.x-first.x,y:second.y-first.y}; const length=Math.hypot(chord.x,chord.y)||1;
         let tangent={x:-chord.y/length,y:chord.x/length};
         if(tangent.x*(-y)+tangent.y*x<0)tangent={x:-tangent.x,y:-tangent.y};
-        return tangent;
+        const restoring={x:centerVector.x/centerLength,y:centerVector.y/centerLength};
+        const vx=tangent.x*.88+restoring.x*.12,vy=tangent.y*.88+restoring.y*.12,fieldLength=Math.hypot(vx,vy)||1;
+        return {x:vx/fieldLength,y:vy/fieldLength};
       }
       function buildSmoothedVectorGrid() {
         const columns=96, rows=64, vectors=[];
