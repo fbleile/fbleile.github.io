@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Stationary Diffusions</title>
     <style>
-      :root { color: #202a2e; background: #f5f7f6; font-family: system-ui, sans-serif; }
+      :root {
+        color: #202a2e;
+        background: #f5f7f6;
+        --simulation-bg: #050507;
+        --particle-orange: #ff9f43;
+        --sample-purple: #a66cff;
+        font-family: system-ui, sans-serif;
+      }
       * { box-sizing: border-box; }
       body { margin: 0; }
       main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
@@ -19,10 +26,11 @@
       select, button { border: 1px solid #b8c5c3; border-radius: 6px; padding: .55rem .7rem; background: white; color: #202a2e; font: inherit; }
       button { background: #176b63; border-color: #176b63; color: white; cursor: pointer; }
       button.secondary { background: white; color: #176b63; }
-      canvas { display: block; width: 100%; aspect-ratio: 1.75; min-height: 260px; border-radius: 9px; background: #17282d; touch-action: none; }
+      canvas { display: block; width: 100%; aspect-ratio: 1.75; min-height: 260px; border-radius: 9px; background: var(--simulation-bg); touch-action: none; }
       .caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; margin-top: .7rem; color: #687277; font-size: .85rem; }
       .legend { display: inline-flex; align-items: center; gap: .4rem; }
-      .dot { width: .7rem; height: .7rem; border-radius: 50%; background: #8bd2c3; }
+      .dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--particle-orange); }
+      .sample { color: var(--sample-purple); }
       .formula { padding: .9rem 1rem; background: #eef5f3; border-left: 3px solid #176b63; color: #37474b; }
       @media (max-width: 560px) { main { padding-top: 1.5rem; } canvas { min-height: 220px; } }
     </style>
@@ -136,7 +144,7 @@
           const y = height / 2 - particle.y * scale;
           context.beginPath();
           context.arc(x, y, 1.8, 0, Math.PI * 2);
-          context.fillStyle = '#8bd2c3';
+          context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--particle-orange').trim();
           context.fill();
         }
         clock.textContent = `t = ${time.toFixed(1)}`;

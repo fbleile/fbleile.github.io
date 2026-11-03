@@ -60,6 +60,7 @@ The core principle is **explain through interaction**: introduce one idea, let t
 
 - Keep the personal homepage restrained, minimal, and readable.
 - Allow notebooks to use a richer palette with a dark or atmospheric visualization canvas and one or two accent colors.
+- For simulations, use a near-black canvas, orange for moving particles, and purple for samples or empirical overlays.
 - Prefer high contrast and accessible text sizes.
 - Use a serious serif or editorial display face for titles with a clean sans-serif face for controls, labels, and metadata.
 - Use color to encode meaning consistently, not merely for decoration.
