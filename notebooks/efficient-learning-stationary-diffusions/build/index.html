@@ -186,6 +186,10 @@
       function riverWidth(angle) {
         return Math.max(.045,(boundaryRadius(imageField.outer,angle)-boundaryRadius(imageField.inner,angle))*.5);
       }
+      function flowSpeed(angle) {
+        const referenceWidth=.11;
+        return Math.max(.35,Math.min(1.5,.72*referenceWidth/riverWidth(angle)));
+      }
       function boundaryRadius(profile,angle) {
         if(!profile.length)return 1;
         const position=wrapAngle(angle)/TAU*profile.length; const lower=Math.floor(position)%profile.length; const upper=(lower+1)%profile.length; const fraction=position-Math.floor(position);
@@ -253,12 +257,14 @@
       }
       function reset() { ducks.length=0;populationBins.fill(0);populationMode=false;populationCount=0;densityAverage.fill(0);densityAverageReady=false;addDucks(1);elapsed=0; }
       function updatePopulation(dt) {
-        const next=new Float32Array(populationBins.length); const diffusion=Math.min(.18,.04+dt*.7);
-        for(let destination=0;destination<populationBins.length;destination++){
-          const source=(destination-.72*dt/(TAU*.95)*populationBins.length+populationBins.length)%populationBins.length; const lower=Math.floor(source),upper=(lower+1)%populationBins.length,fraction=source-lower;
-          const advected=populationBins[lower]*(1-fraction)+populationBins[upper]*fraction;
-          const left=populationBins[(destination-1+populationBins.length)%populationBins.length],right=populationBins[(destination+1)%populationBins.length];
-          next[destination]=advected*(1-diffusion)+diffusion*(left+right)*.5;
+        const advected=new Float32Array(populationBins.length),next=new Float32Array(populationBins.length); const diffusion=Math.min(.18,.04+dt*.7);
+        for(let index=0;index<populationBins.length;index++){
+          const angle=index/populationBins.length*TAU; const circumference=TAU*Math.max(.5,ringRadius(angle)); const cfl=Math.min(.45,flowSpeed(angle)*dt/circumference*populationBins.length);
+          advected[index]+=populationBins[index]*(1-cfl); advected[(index+1)%populationBins.length]+=populationBins[index]*cfl;
+        }
+        for(let index=0;index<populationBins.length;index++){
+          const left=advected[(index-1+populationBins.length)%populationBins.length],right=advected[(index+1)%populationBins.length];
+          next[index]=advected[index]*(1-diffusion)+diffusion*(left+right)*.5;
         }
         populationBins.set(next);
       }
@@ -278,8 +284,9 @@
           const noiseX=(field.x*forwardNoise-field.y*lateralNoise)*kick;
           const noiseY=(field.y*forwardNoise+field.x*lateralNoise)*kick;
           const restoringStrength=inside?2.1:.25;
-          duck.x += field.x*dt + (center.x-duck.x)*restoringStrength*dt + noiseX;
-          duck.y += field.y*dt + (center.y-duck.y)*restoringStrength*dt + noiseY;
+          const speed=inside?flowSpeed(angle):.9;
+          duck.x += field.x*speed*dt + (center.x-duck.x)*restoringStrength*dt + noiseX;
+          duck.y += field.y*speed*dt + (center.y-duck.y)*restoringStrength*dt + noiseY;
           if(ducks.length<=16){duck.history.push({x:duck.x,y:duck.y});if(duck.history.length>historyLength)duck.history.shift();}else duck.history.length=0;
         });
         elapsed+=dt;
