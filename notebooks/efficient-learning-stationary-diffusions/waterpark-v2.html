@@ -101,7 +101,7 @@
       const TAU = Math.PI * 2;
       const ducks = [];
       const historyLength = 48;
-      const imageField = { pixels:null, width:0, height:0, max:1 };
+      const imageField = { pixels:null, width:0, height:0, max:1, ring:[] };
       let running = true; let previous = performance.now(); let elapsed = 0;
 
       function resize(canvas, context) {
@@ -127,6 +127,11 @@
         scratchContext.putImageData(imageData,0,0);
         imageField.pixels=imageData.data; imageField.width=width; imageField.height=height; imageField.visual=scratch;
         for(let i=0;i<imageField.pixels.length;i+=4) imageField.max=Math.max(imageField.max, imageField.pixels[i]*.15+imageField.pixels[i+1]*.45+imageField.pixels[i+2]*.4);
+        imageField.ring=Array.from({length:360},(_,index)=>{
+          const angle=index/360*TAU; let weightedRadius=0; let totalWeight=0;
+          for(let radius=.45;radius<1.4;radius+=.012){const weight=Math.pow(waterAt(radius*Math.cos(angle),radius*Math.sin(angle)),2);weightedRadius+=radius*weight;totalWeight+=weight;}
+          return totalWeight>.01?weightedRadius/totalWeight:1;
+        });
       }
       function waterAt(x,y) {
         if(!imageField.pixels)return 0;
@@ -140,18 +145,25 @@
         [-1,0,1].forEach(dx=>[-1,0,1].forEach(dy=>{sum+=waterAt(x+dx*.018,y+dy*.018)*(dx===0&&dy===0?4:1);}));
         return sum/12;
       }
+      function ringRadius(angle) {
+        const position=wrapAngle(angle)/TAU*360; const lower=Math.floor(position)%360; const upper=(lower+1)%360; const fraction=position-Math.floor(position);
+        return imageField.ring.length ? imageField.ring[lower]*(1-fraction)+imageField.ring[upper]*fraction : 1;
+      }
+      function ringPoint(angle) { const radius=ringRadius(angle); return {x:radius*Math.cos(angle),y:radius*Math.sin(angle)}; }
       function fieldAt(x,y) {
         const step=.035;
         const gx=(smoothWaterAt(x+step,y)-smoothWaterAt(x-step,y))/(2*step);
         const gy=(smoothWaterAt(x,y+step)-smoothWaterAt(x,y-step))/(2*step);
-        const rx=1.18, ry=.68;
-        const angle=Math.atan2(y/ry,x/rx);
-        const center={x:rx*Math.cos(angle),y:ry*Math.sin(angle)};
+        const angle=Math.atan2(y,x);
+        const center=ringPoint(angle);
         const normal={x:center.x-x,y:center.y-y};
-        const tangentLength=Math.hypot(-rx*Math.sin(angle),ry*Math.cos(angle));
-        const tangent={x:-rx*Math.sin(angle)/tangentLength,y:ry*Math.cos(angle)/tangentLength};
-        const gradientStrength=.55;
-        return { x:tangent.x*.72 + normal.x*2.35 + gx*gradientStrength, y:tangent.y*.72 + normal.y*2.35 + gy*gradientStrength };
+        const normalLength=Math.hypot(normal.x,normal.y)||1;
+        const normalDirection={x:normal.x/normalLength,y:normal.y/normalLength};
+        const before=ringPoint(angle-.015), after=ringPoint(angle+.015);
+        const tangentLength=Math.hypot(after.x-before.x,after.y-before.y);
+        const tangent={x:(after.x-before.x)/tangentLength,y:(after.y-before.y)/tangentLength};
+        const gradientStrength=.35;
+        return { x:tangent.x*.72 + normal.x*2.7 + gx*gradientStrength, y:tangent.y*.72 + normal.y*2.7 + gy*gradientStrength, tangent, normalDirection };
       }
       function addDuck() { ducks.push({x:1.12+normal()*.035,y:normal()*.05,history:[]}); updateCount(); }
       function updateCount() { document.getElementById('count').value=ducks.length; }
@@ -159,16 +171,22 @@
       function update(dt) {
         ducks.forEach(duck=>{
           const field=fieldAt(duck.x,duck.y);
-          duck.x += field.x*dt + .12*Math.sqrt(dt)*normal();
-          duck.y += field.y*dt + .12*Math.sqrt(dt)*normal();
+          const deviation=(10+Math.random()*60)*Math.PI/180;
+          const direction=(Math.random()<.5?0:Math.PI)+(Math.random()<.5?-deviation:deviation);
+          const kick=.06*Math.sqrt(dt);
+          const noiseX=field.tangent.x*Math.cos(direction)*kick+field.normalDirection.x*Math.sin(direction)*kick;
+          const noiseY=field.tangent.y*Math.cos(direction)*kick+field.normalDirection.y*Math.sin(direction)*kick;
+          duck.x += field.x*dt + noiseX;
+          duck.y += field.y*dt + noiseY;
           const radius=Math.hypot(duck.x,duck.y); if(radius>1.48){ duck.x*=.93; duck.y*=.93; }
           duck.history.push({x:duck.x,y:duck.y}); if(duck.history.length>historyLength)duck.history.shift();
         });
         elapsed+=dt;
       }
       function fitImage(context,image,width,height,alpha){
-        if(!image.complete||!image.naturalWidth)return;
-        const scale=Math.max(width/image.naturalWidth,height/image.naturalHeight); const w=image.naturalWidth*scale,h=image.naturalHeight*scale;
+        const imageWidth=image.naturalWidth||image.width; const imageHeight=image.naturalHeight||image.height;
+        if(!image.complete&&!imageWidth)return;
+        const scale=Math.max(width/imageWidth,height/imageHeight); const w=imageWidth*scale,h=imageHeight*scale;
         context.save(); context.globalAlpha=alpha; context.drawImage(image,(width-w)/2,(height-h)/2,w,h); context.restore();
       }
       function drawRiver(){
