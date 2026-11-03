@@ -85,7 +85,7 @@
               <div class="canvas-wrap"><canvas id="river" aria-label="Animated ducks in a river"></canvas></div>
               <div class="canvas-wrap"><canvas id="density" aria-label="Live density of ducks around the river"></canvas></div>
             </div>
-            <p class="note"><span style="color:var(--duck)">●</span> ducks and fading trails &nbsp; <span style="color:var(--population)">●</span> live population density</p>
+            <p class="note"><span style="color:var(--duck)">●</span> ducks and fading trails &nbsp; <span style="color:var(--population)">●</span> live density &nbsp; <span style="color:var(--sample)">┄</span> accumulated density</p>
           </div>
         </aside>
       </div>
@@ -105,6 +105,9 @@
       const ducks = [];
       const maxDucks = 10000;
       const historyLength = 48;
+      const densityBins = 120;
+      const densityAverage = new Float32Array(densityBins);
+      let densityAverageReady = false;
       const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[], inner:[], outer:[], boundaries:[], grid:null };
       const spawnButton = document.getElementById('spawn');
       let running = true; let previous = performance.now(); let elapsed = 0;
@@ -237,7 +240,7 @@
         document.getElementById('count').value=`${ducks.length} / ${maxDucks}`;
         spawnButton.textContent=ducks.length>=maxDucks?'Maximum reached':`＋ Spawn ${spawnBatch()===1?'duck':`${spawnBatch()} ducks`}`;
       }
-      function reset() { ducks.length=0; addDucks(1); elapsed=0; }
+      function reset() { ducks.length=0; densityAverage.fill(0); densityAverageReady=false; addDucks(1); elapsed=0; }
       function update(dt) {
         ducks.forEach(duck=>{
           const field=vectorAt(duck.x,duck.y);
@@ -264,21 +267,26 @@
         const width=riverCanvas.clientWidth,height=riverCanvas.clientHeight; riverContext.clearRect(0,0,width,height); fitImage(riverContext,imageField.visual||riverImage,width,height,.97);
         const densePopulation=ducks.length>16;
         if(densePopulation){riverContext.save();riverContext.globalCompositeOperation='lighter';}
+        const showDucks=ducks.length<=64;
         ducks.forEach(duck=>{
-          duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;const point=toCanvasPoint(past.x,past.y,width,height);riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(point.x,point.y,2.1,0,TAU);riverContext.fill();});
+          if(showDucks)duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;const point=toCanvasPoint(past.x,past.y,width,height);riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(point.x,point.y,2.1,0,TAU);riverContext.fill();});
           const point=toCanvasPoint(duck.x,duck.y,width,height), angle=Math.atan2(duck.y,duck.x);
-          if(ducks.length<=16&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.translate(point.x,point.y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
+          if(showDucks&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.globalAlpha=Math.max(.18,.9-ducks.length*.01);riverContext.translate(point.x,point.y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
           else {const alpha=Math.max(.03,Math.min(.18,3/Math.sqrt(ducks.length)));riverContext.fillStyle=`rgba(255,212,90,${alpha})`;riverContext.beginPath();riverContext.arc(point.x,point.y,3.6,0,TAU);riverContext.fill();}
         });
         if(densePopulation)riverContext.restore();
       }
       function drawDensity(){
         const width=densityCanvas.clientWidth,height=densityCanvas.clientHeight; densityContext.clearRect(0,0,width,height);
-        const left=18,right=width-10,top=12,bottom=height-20,bins=120;
-        const values=Array.from({length:bins},(_,i)=>ducks.reduce((sum,duck)=>{const a=wrapAngle(Math.atan2(duck.y,duck.x));const b=i/bins*TAU;return sum+Math.exp(-Math.pow(angleDistance(a,b)/.12,2)/2);},0));
-        const max=Math.max(1,...values); densityContext.beginPath(); values.forEach((value,i)=>{const x=left+i/(bins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});
+        const left=18,right=width-10,top=12,bottom=height-20,raw=new Float32Array(densityBins),values=new Float32Array(densityBins);
+        ducks.forEach(duck=>{const bin=Math.floor(wrapAngle(Math.atan2(duck.y,duck.x))/TAU*densityBins)%densityBins;raw[bin]+=1;});
+        const kernel=[1,2,3,4,3,2,1],kernelTotal=16;
+        for(let i=0;i<densityBins;i++){for(let offset=-3;offset<=3;offset++)values[i]+=raw[(i+offset+densityBins)%densityBins]*kernel[offset+3]/kernelTotal;densityAverage[i]=densityAverageReady?densityAverage[i]*.996+values[i]*.004:values[i];}
+        densityAverageReady=true;
+        const max=Math.max(1,...values,...densityAverage); densityContext.beginPath(); values.forEach((value,i)=>{const x=left+i/(densityBins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});
         densityContext.lineTo(right,bottom);densityContext.lineTo(left,bottom);densityContext.closePath();densityContext.fillStyle='rgba(255,212,90,.22)';densityContext.fill();
-        densityContext.beginPath();values.forEach((value,i)=>{const x=left+i/(bins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});densityContext.strokeStyle='#ffd45a';densityContext.lineWidth=2;densityContext.stroke();
+        densityContext.beginPath();values.forEach((value,i)=>{const x=left+i/(densityBins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});densityContext.strokeStyle='#ffd45a';densityContext.lineWidth=2;densityContext.stroke();
+        densityContext.beginPath();densityAverage.forEach((value,i)=>{const x=left+i/(densityBins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});densityContext.strokeStyle='#a66cff';densityContext.lineWidth=1.5;densityContext.setLineDash([4,4]);densityContext.stroke();densityContext.setLineDash([]);
         densityContext.fillStyle='#b7b0a7';densityContext.font='10px "Space Mono"';densityContext.fillText('position around the river →',left,height-6);
       }
       function frame(now){const dt=Math.min((now-previous)/1000,.04);previous=now;if(running)update(dt);drawRiver();drawDensity();requestAnimationFrame(frame);}
