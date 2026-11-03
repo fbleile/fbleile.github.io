@@ -4,299 +4,181 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Stationary Diffusions · The Duck River</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <style>
-      :root {
-        color: #eeeaf4;
-        background: #050507;
-        --water: #86d9f2;
-        --duck: #ff9f43;
-        --population: #ffd45a;
-        --sample: #a66cff;
-        font-family: system-ui, sans-serif;
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; background: #050507; }
-      main { max-width: 1180px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
-      h1 { margin: 0 0 .55rem; font: 400 clamp(2.2rem, 6vw, 4.5rem)/1 Georgia, serif; letter-spacing: -.04em; }
-      h2 { margin: 3rem 0 .75rem; font: 400 1.5rem/1.2 Georgia, serif; }
-      p { line-height: 1.65; }
-      .intro { max-width: 700px; color: #b9b2c4; }
-      .simulation { margin-top: 2rem; padding: 1rem; border: 1px solid #2a2630; border-radius: 16px; background: #0b0b10; }
-      .controls { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem 1.25rem; margin-bottom: 1rem; }
-      label { display: grid; gap: .25rem; color: #b9b2c4; font-size: .82rem; }
-      input[type="range"] { width: 150px; accent-color: var(--population); }
-      select, button { border: 1px solid #514b5b; border-radius: 7px; padding: .55rem .7rem; background: #111017; color: #eeeaf4; font: inherit; }
-      button { border-color: var(--duck); background: var(--duck); color: #160d05; cursor: pointer; font-weight: 650; }
-      button.secondary { border-color: #514b5b; background: transparent; color: #eeeaf4; }
-      .view { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(240px, .8fr); gap: 1rem; }
-      .panel { min-width: 0; }
-      canvas { display: block; width: 100%; border: 1px solid #24212b; border-radius: 10px; background: #050507; }
-      #river { aspect-ratio: 1.5; }
-      #density { aspect-ratio: 1.18; }
-      .panel-title { display: flex; justify-content: space-between; gap: 1rem; margin: 0 0 .45rem; color: #b9b2c4; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
-      .caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; margin-top: .75rem; color: #8e8798; font-size: .82rem; }
-      .duck-key { color: var(--duck); }
-      .density-key { color: var(--population); }
-      .formula { padding: 1rem 1.1rem; border-left: 3px solid var(--sample); color: #c9c0d3; background: #12101a; }
-      @media (max-width: 760px) { .view { grid-template-columns: 1fr; } #density { aspect-ratio: 1.8; } }
+      :root { --paper:#efeade; --ink:#151318; --muted:#716b68; --river:#8ddcf4; --duck:#ff9f43; --population:#ffd45a; --sample:#9c6cff; font-family:'Space Mono',monospace; color:var(--ink); background:var(--paper); }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--paper); background-image:radial-gradient(#18141612 .7px,transparent .7px),linear-gradient(90deg,#ffffff16,#00000004); background-size:7px 7px,100% 100%; }
+      main { width:min(1240px,calc(100% - 36px)); margin:0 auto; padding:8vh 0 14vh; }
+      .masthead { max-width:760px; padding-bottom:10vh; border-bottom:1px solid #15131855; }
+      .kicker { margin:0 0 1rem; color:var(--muted); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
+      h1 { margin:0; font-size:clamp(2rem,5vw,4.8rem); line-height:1.03; letter-spacing:-.08em; }
+      .dek { max-width:650px; margin:1.5rem 0 0; color:#4e4948; font-size:clamp(.9rem,1.6vw,1.1rem); line-height:1.7; }
+      .story-layout { display:grid; grid-template-columns:minmax(0, .86fr) minmax(420px,1.14fr); gap:clamp(2rem,7vw,7rem); align-items:start; }
+      .story { padding-top:8vh; }
+      .story-block { min-height:72vh; padding:5vh 0; border-bottom:1px solid #15131835; }
+      .story-block:first-child { padding-top:0; }
+      .story-block h2 { margin:0 0 1.2rem; font-size:clamp(1.25rem,2vw,1.8rem); line-height:1.25; letter-spacing:-.06em; }
+      .story-block p { color:#4e4948; font-size:.88rem; line-height:1.9; }
+      .story-block strong { color:var(--ink); }
+      .simulation-column { position:sticky; top:4vh; padding-top:8vh; transform:translateY(var(--story-shift,0px)); transition:transform .15s linear; }
+      .simulation-label { display:flex; justify-content:space-between; margin:0 0 .55rem; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; }
+      .simulation-label span:last-child { color:var(--muted); }
+      .simulation { padding:12px; border:1px solid #15131855; background:#07080a; box-shadow:8px 8px 0 #15131818; }
+      .controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 0 10px; }
+      button { border:1px solid var(--duck); border-radius:3px; padding:.6rem .75rem; background:var(--duck); color:#1a0f05; font:700 .72rem 'Space Mono',monospace; cursor:pointer; }
+      button.secondary { border-color:#b5aca1; background:transparent; color:#eeeaf4; }
+      .count { margin-left:auto; color:#d8d0c6; font-size:.7rem; }
+      .canvas-wrap { position:relative; }
+      canvas { display:block; width:100%; border:1px solid #24232a; background:#050507; }
+      #river { aspect-ratio:1.5; }
+      #density { margin-top:10px; aspect-ratio:2.4; }
+      .note { margin:10px 0 0; color:#b7b0a7; font-size:.67rem; line-height:1.6; }
+      .equation { display:inline-block; padding:.35rem .55rem; color:var(--sample); background:#9c6cff16; }
+      @media (max-width:850px) { main { width:min(100% - 24px,680px); padding-top:5vh; } .story-layout { display:block; } .simulation-column { position:relative; top:auto; padding-top:2rem; transform:none; } .story { padding-top:5vh; } .story-block { min-height:auto; padding:4rem 0; } }
     </style>
   </head>
   <body>
     <main>
-      <h1>The Duck River</h1>
-      <p class="intro">Start with one duck. It follows a current around a glowing lazy river, wandering slightly but never escaping. The second view shows the same motion as a population: every duck leaves a soft glow at its current position.</p>
-
-      <section class="simulation" aria-label="Interactive stationary diffusion simulation">
-        <div class="controls">
-          <label for="duck-count">Ducks <output id="duck-count-value">1</output>
-            <input id="duck-count" type="range" min="1" max="80" value="1" />
-          </label>
-          <label for="bend">Widen the neck <output id="bend-value">0%</output>
-            <input id="bend" type="range" min="0" max="100" value="0" />
-          </label>
-          <button id="toggle" type="button">Pause</button>
-          <button id="reset" class="secondary" type="button">Reset river</button>
-        </div>
-        <div class="view">
-          <div class="panel">
-            <div class="panel-title"><span>The river</span><span class="duck-key">● moving ducks</span></div>
-            <canvas id="river" aria-label="Ducks moving around a glowing river"></canvas>
+      <header class="masthead">
+        <p class="kicker">An explorable introduction to stationary diffusions</p>
+        <h1>The Duck River</h1>
+        <p class="dek">One duck is hard to predict. A whole river of ducks develops a pattern. Scroll the story on the left while the waterpark remains alive on the right.</p>
+      </header>
+      <div class="story-layout">
+        <article class="story" id="story">
+          <section class="story-block" data-shift="0">
+            <h2>01 / Follow one duck</h2>
+            <p>Start with a single duck. It is carried clockwise by a current, but its path is never perfectly smooth. The faint trail is its recent history: a little memory of a random trajectory.</p>
+            <p>There is no wall. The glowing river is a preferred region, and a soft force pushes the duck back toward the water whenever noise carries it away.</p>
+          </section>
+          <section class="story-block" data-shift="-14">
+            <h2>02 / The river has a field</h2>
+            <p>The image is not only decoration. Its pixels define the force field. Bright water attracts from the inside and outside; the tangent to the ring carries the duck around it.</p>
+            <p class="equation">drift = tangential flow + pixel attraction</p>
+          </section>
+          <section class="story-block" data-shift="-28">
+            <h2>03 / Add more ducks</h2>
+            <p>Press <strong>spawn duck</strong>. Each new duck follows the same field but receives its own random kicks. The right-hand plot adds one small glow for every duck and shows where the population is now.</p>
+            <p>At a glance, the individual paths look noisy. Across many ducks, the river’s structure becomes visible.</p>
+          </section>
+          <section class="story-block" data-shift="-42">
+            <h2>04 / A still pattern in moving water</h2>
+            <p>After enough time, the distribution of ducks can settle even though no duck stops. This is the first intuition for a stationary diffusion: motion at the particle level, stability at the population level.</p>
+          </section>
+        </article>
+        <aside class="simulation-column" id="simulation-column">
+          <div class="simulation-label"><span>Live experiment</span><span>pixel-derived vector field</span></div>
+          <div class="simulation">
+            <div class="controls">
+              <button id="spawn" type="button">＋ Spawn duck</button>
+              <button id="toggle" class="secondary" type="button">Pause</button>
+              <button id="reset" class="secondary" type="button">Reset</button>
+              <span class="count">ducks: <output id="count">1</output></span>
+            </div>
+            <div class="canvas-wrap"><canvas id="river" aria-label="Animated ducks in a river"></canvas></div>
+            <canvas id="density" aria-label="Live density of ducks around the river"></canvas>
+            <p class="note"><span style="color:var(--duck)">●</span> ducks and fading trails &nbsp; <span style="color:var(--population)">●</span> live population density</p>
           </div>
-          <div class="panel">
-            <div class="panel-title"><span>Where are they?</span><span class="density-key">● live density</span></div>
-            <canvas id="density" aria-label="Live density of ducks along the river"></canvas>
-          </div>
-        </div>
-        <div class="caption"><span id="message">One duck, one trajectory, one moving glow.</span><span id="clock">t = 0.0</span></div>
-      </section>
-
-      <h2>One motion, two views</h2>
-      <p class="formula"><strong>Left:</strong> individual trajectories. &nbsp; <strong>Right:</strong> the population density, built by adding one soft glow for every duck.</p>
-      <p class="intro">The current is not drawn as a wall. A gentle restoring force keeps the ducks close to the orbit, while random fluctuations keep every path moving. When the river is widened, the passage slows down and ducks spend more time there.</p>
+        </aside>
+      </div>
     </main>
-
     <script>
       const riverCanvas = document.getElementById('river');
       const densityCanvas = document.getElementById('density');
       const riverContext = riverCanvas.getContext('2d');
       const densityContext = densityCanvas.getContext('2d');
-      const duckImage = new Image();
       const riverImage = new Image();
-      duckImage.src = 'assets/pi-duck.png';
+      const duckImage = new Image();
       riverImage.src = 'assets/lazy-river-narrow.png';
-      const countInput = document.getElementById('duck-count');
-      const bendInput = document.getElementById('bend');
-      const countValue = document.getElementById('duck-count-value');
-      const bendValue = document.getElementById('bend-value');
-      const toggleButton = document.getElementById('toggle');
-      const resetButton = document.getElementById('reset');
-      const message = document.getElementById('message');
-      const clock = document.getElementById('clock');
+      duckImage.src = 'assets/pi-duck.png';
       const TAU = Math.PI * 2;
-      const particles = [];
-      const HISTORY_LENGTH = 45;
-      let running = true;
-      let time = 0;
-      let previous = performance.now();
+      const ducks = [];
+      const historyLength = 48;
+      const imageField = { pixels:null, width:0, height:0, max:1 };
+      let running = true; let previous = performance.now(); let elapsed = 0;
 
-      function randomNormal() {
-        let u = 0; let v = 0;
-        while (!u) u = Math.random();
-        while (!v) v = Math.random();
-        return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v);
+      function resize(canvas, context) {
+        const ratio = window.devicePixelRatio || 1;
+        const box = canvas.getBoundingClientRect();
+        canvas.width = Math.round(box.width * ratio); canvas.height = Math.round(box.height * ratio);
+        context.setTransform(ratio,0,0,ratio,0,0);
       }
+      function normal() { let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v); }
+      function wrapAngle(value) { return (value % TAU + TAU) % TAU; }
+      function angleDistance(a,b) { const d=Math.abs(a-b)%TAU; return Math.min(d,TAU-d); }
 
-      function resizeCanvas(canvas, context) {
-        const scale = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = Math.round(rect.width * scale);
-        canvas.height = Math.round(rect.height * scale);
-        context.setTransform(scale, 0, 0, scale, 0, 0);
+      // Read the river image pixel-by-pixel. The blue luminance becomes an attraction potential.
+      function buildImageField() {
+        const width=220, height=Math.round(width*riverImage.naturalHeight/riverImage.naturalWidth);
+        const scratch=document.createElement('canvas'); scratch.width=width; scratch.height=height;
+        const scratchContext=scratch.getContext('2d'); scratchContext.drawImage(riverImage,0,0,width,height);
+        imageField.pixels=scratchContext.getImageData(0,0,width,height).data; imageField.width=width; imageField.height=height;
+        for(let i=0;i<imageField.pixels.length;i+=4) imageField.max=Math.max(imageField.max, imageField.pixels[i]*.15+imageField.pixels[i+1]*.45+imageField.pixels[i+2]*.4);
       }
-
-      function angleDistance(a, b) {
-        const difference = Math.abs(a - b) % 1;
-        return Math.min(difference, 1 - difference);
+      function waterAt(x,y) {
+        if(!imageField.pixels)return 0;
+        const px=Math.max(0,Math.min(imageField.width-1,Math.round((x/2.8+.5)*(imageField.width-1))));
+        const py=Math.max(0,Math.min(imageField.height-1,Math.round((.5-y/1.6)*(imageField.height-1))));
+        const i=(py*imageField.width+px)*4; const p=imageField.pixels;
+        return (p[i]*.15+p[i+1]*.45+p[i+2]*.4)*(p[i+3]/255)/imageField.max;
       }
-
-      function neckFeature(s) {
-        return Math.exp(-Math.pow(angleDistance(s, 0) / .075, 2));
+      function fieldAt(x,y) {
+        const step=.025;
+        const gx=(waterAt(x+step,y)-waterAt(x-step,y))/(2*step);
+        const gy=(waterAt(x,y+step)-waterAt(x,y-step))/(2*step);
+        const angle=Math.atan2(y,x);
+        const tangent={x:-Math.sin(angle),y:Math.cos(angle)};
+        const brightness=waterAt(x,y);
+        const flow=.66 + .25 * (1-Math.min(1,brightness));
+        return { x:tangent.x*flow + gx*1.5, y:tangent.y*flow + gy*1.5 };
       }
-
-      function riverPoint(s, offset = 0) {
-        const angle = s * TAU;
-        const radiusX = 1.18;
-        const radiusY = .68;
-        return { x: Math.cos(angle) * radiusX + offset * Math.cos(angle), y: Math.sin(angle) * radiusY + offset * Math.sin(angle) };
-      }
-
-      function riverTangent(s) {
-        const before = riverPoint((s - .001 + 1) % 1);
-        const after = riverPoint((s + .001) % 1);
-        return Math.atan2(after.y - before.y, after.x - before.x);
-      }
-
-      function speedAt(s) {
-        const width = channelWidth(s);
-        return .095 * (.22 / width);
-      }
-
-      function channelWidth(s) {
-        const neck = neckFeature(s);
-        const widening = Number(bendInput.value) / 100;
-        return .22 - .11 * neck + .11 * neck * widening;
-      }
-
-      function makeParticle(index) {
-        const s = index === 0 ? .04 : Math.random();
-        return { s, offset: (Math.random() - .5) * .035, history: [] };
-      }
-
-      function setParticleCount() {
-        const target = Number(countInput.value);
-        while (particles.length < target) particles.push(makeParticle(particles.length));
-        particles.length = target;
-        countValue.value = target;
-        message.textContent = target === 1
-          ? 'One duck, one trajectory, one moving glow.'
-          : `${target} ducks: overlapping glows begin to reveal a population pattern.`;
-      }
-
-      function reset() {
-        particles.length = 0;
-        setParticleCount();
-        time = 0;
-      }
-
+      function addDuck() { ducks.push({x:1.12+normal()*.035,y:normal()*.05,history:[]}); updateCount(); }
+      function updateCount() { document.getElementById('count').value=ducks.length; }
+      function reset() { ducks.length=0; addDuck(); elapsed=0; }
       function update(dt) {
-        for (const particle of particles) {
-          particle.s = (particle.s + speedAt(particle.s) * dt + .004 * Math.sqrt(dt) * randomNormal() + 1) % 1;
-          const width = channelWidth(particle.s);
-          particle.offset += -3.5 * particle.offset * dt + .04 * Math.sqrt(dt) * randomNormal();
-          particle.offset = Math.max(-width, Math.min(width, particle.offset));
-          particle.history.push({ s: particle.s, offset: particle.offset });
-          if (particle.history.length > HISTORY_LENGTH) particle.history.shift();
-        }
-        time += dt;
-      }
-
-      function fitImage(context, image, width, height, alpha) {
-        if (!image.complete || !image.naturalWidth) return;
-        const imageScale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-        const drawWidth = image.naturalWidth * imageScale;
-        const drawHeight = image.naturalHeight * imageScale;
-        context.save();
-        context.globalAlpha = alpha;
-        context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
-        context.restore();
-      }
-
-      function drawRiver() {
-        const width = riverCanvas.clientWidth;
-        const height = riverCanvas.clientHeight;
-        riverContext.clearRect(0, 0, width, height);
-        fitImage(riverContext, riverImage, width, height, .96);
-        const scale = Math.min(width, height) * .36;
-        riverContext.save();
-        riverContext.translate(width / 2, height / 2);
-        riverContext.strokeStyle = 'rgba(166,108,255,.22)';
-        riverContext.lineWidth = 1;
-        riverContext.setLineDash([3, 7]);
-        riverContext.beginPath();
-        for (let i = 0; i <= 160; i += 1) {
-          const point = riverPoint(i / 160);
-          if (!i) riverContext.moveTo(point.x * scale, point.y * scale); else riverContext.lineTo(point.x * scale, point.y * scale);
-        }
-        riverContext.stroke();
-        riverContext.restore();
-
-        for (const particle of particles) {
-          particle.history.forEach((past, index) => {
-            const point = riverPoint(past.s, past.offset);
-            const alpha = (index / particle.history.length) * .4;
-            riverContext.fillStyle = `rgba(255,159,67,${alpha})`;
-            riverContext.beginPath();
-            riverContext.arc(width / 2 + point.x * scale, height / 2 - point.y * scale, 2.2, 0, TAU);
-            riverContext.fill();
-          });
-          const point = riverPoint(particle.s, particle.offset);
-          const x = width / 2 + point.x * scale;
-          const y = height / 2 - point.y * scale;
-          const angle = -riverTangent(particle.s);
-          if (particles.length <= 12 && duckImage.complete && duckImage.naturalWidth) {
-            riverContext.save();
-            riverContext.translate(x, y);
-            riverContext.rotate(angle);
-            riverContext.drawImage(duckImage, -15, -17, 30, 34);
-            riverContext.restore();
-          } else {
-            riverContext.fillStyle = 'rgba(255,212,90,.48)';
-            riverContext.beginPath();
-            riverContext.arc(x, y, 3, 0, TAU);
-            riverContext.fill();
-          }
-        }
-      }
-
-      function drawDensity() {
-        const width = densityCanvas.clientWidth;
-        const height = densityCanvas.clientHeight;
-        densityContext.clearRect(0, 0, width, height);
-        const left = 24; const right = width - 12; const top = 18; const bottom = height - 28;
-        densityContext.strokeStyle = '#302c38';
-        densityContext.lineWidth = 1;
-        densityContext.beginPath();
-        densityContext.moveTo(left, bottom); densityContext.lineTo(right, bottom);
-        densityContext.stroke();
-        const bins = 100;
-        const values = Array.from({ length: bins }, (_, bin) => particles.reduce((sum, particle) => {
-          const distance = angleDistance(bin / bins, particle.s);
-          return sum + Math.exp(-Math.pow(distance / .035, 2) / 2);
-        }, 0));
-        const maximum = Math.max(1, ...values);
-        densityContext.beginPath();
-        values.forEach((value, bin) => {
-          const x = left + bin / (bins - 1) * (right - left);
-          const y = bottom - value / maximum * (bottom - top) * .82;
-          if (!bin) densityContext.moveTo(x, y); else densityContext.lineTo(x, y);
+        ducks.forEach(duck=>{
+          const field=fieldAt(duck.x,duck.y);
+          duck.x += field.x*dt + .12*Math.sqrt(dt)*normal();
+          duck.y += field.y*dt + .12*Math.sqrt(dt)*normal();
+          const radius=Math.hypot(duck.x,duck.y); if(radius>1.48){ duck.x*=.93; duck.y*=.93; }
+          duck.history.push({x:duck.x,y:duck.y}); if(duck.history.length>historyLength)duck.history.shift();
         });
-        densityContext.lineTo(right, bottom); densityContext.lineTo(left, bottom); densityContext.closePath();
-        densityContext.fillStyle = 'rgba(255,212,90,.18)';
-        densityContext.fill();
-        densityContext.beginPath();
-        values.forEach((value, bin) => {
-          const x = left + bin / (bins - 1) * (right - left);
-          const y = bottom - value / maximum * (bottom - top) * .82;
-          if (!bin) densityContext.moveTo(x, y); else densityContext.lineTo(x, y);
-        });
-        densityContext.strokeStyle = '#ffd45a';
-        densityContext.lineWidth = 2;
-        densityContext.stroke();
-        densityContext.fillStyle = '#8e8798';
-        densityContext.font = '11px system-ui';
-        densityContext.fillText('position around the river →', left, height - 8);
+        elapsed+=dt;
       }
-
-      function frame(now) {
-        const dt = Math.min((now - previous) / 1000, .04);
-        previous = now;
-        if (running) update(dt);
-        drawRiver();
-        drawDensity();
-        clock.textContent = `t = ${time.toFixed(1)}`;
-        requestAnimationFrame(frame);
+      function fitImage(context,image,width,height,alpha){
+        if(!image.complete||!image.naturalWidth)return;
+        const scale=Math.max(width/image.naturalWidth,height/image.naturalHeight); const w=image.naturalWidth*scale,h=image.naturalHeight*scale;
+        context.save(); context.globalAlpha=alpha; context.drawImage(image,(width-w)/2,(height-h)/2,w,h); context.restore();
       }
-
-      countInput.addEventListener('input', setParticleCount);
-      bendInput.addEventListener('input', () => { bendValue.value = `${bendInput.value}%`; });
-      toggleButton.addEventListener('click', () => { running = !running; toggleButton.textContent = running ? 'Pause' : 'Resume'; });
-      resetButton.addEventListener('click', reset);
-      window.addEventListener('resize', () => { resizeCanvas(riverCanvas, riverContext); resizeCanvas(densityCanvas, densityContext); });
-      setParticleCount();
-      bendValue.value = '0%';
-      resizeCanvas(riverCanvas, riverContext);
-      resizeCanvas(densityCanvas, densityContext);
-      requestAnimationFrame(frame);
+      function drawRiver(){
+        const width=riverCanvas.clientWidth,height=riverCanvas.clientHeight; riverContext.clearRect(0,0,width,height); fitImage(riverContext,riverImage,width,height,.97);
+        const scale=Math.min(width,height)*.37; riverContext.save(); riverContext.translate(width/2,height/2);
+        ducks.forEach(duck=>{
+          duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(past.x*scale,-past.y*scale,2.1,0,TAU);riverContext.fill();});
+          const angle=Math.atan2(duck.y,duck.x),x=duck.x*scale,y=-duck.y*scale;
+          if(ducks.length<=16&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.translate(x,y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
+          else {riverContext.fillStyle='rgba(255,212,90,.52)';riverContext.beginPath();riverContext.arc(x,y,3,0,TAU);riverContext.fill();}
+        }); riverContext.restore();
+      }
+      function drawDensity(){
+        const width=densityCanvas.clientWidth,height=densityCanvas.clientHeight; densityContext.clearRect(0,0,width,height);
+        const left=18,right=width-10,top=12,bottom=height-20,bins=120;
+        const values=Array.from({length:bins},(_,i)=>ducks.reduce((sum,duck)=>{const a=wrapAngle(Math.atan2(duck.y,duck.x));const b=i/bins*TAU;return sum+Math.exp(-Math.pow(angleDistance(a,b)/.12,2)/2);},0));
+        const max=Math.max(1,...values); densityContext.beginPath(); values.forEach((value,i)=>{const x=left+i/(bins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});
+        densityContext.lineTo(right,bottom);densityContext.lineTo(left,bottom);densityContext.closePath();densityContext.fillStyle='rgba(255,212,90,.22)';densityContext.fill();
+        densityContext.beginPath();values.forEach((value,i)=>{const x=left+i/(bins-1)*(right-left),y=bottom-value/max*(bottom-top)*.85;if(!i)densityContext.moveTo(x,y);else densityContext.lineTo(x,y);});densityContext.strokeStyle='#ffd45a';densityContext.lineWidth=2;densityContext.stroke();
+        densityContext.fillStyle='#b7b0a7';densityContext.font='10px "Space Mono"';densityContext.fillText('position around the river →',left,height-6);
+      }
+      function frame(now){const dt=Math.min((now-previous)/1000,.04);previous=now;if(running)update(dt);drawRiver();drawDensity();requestAnimationFrame(frame);}
+      document.getElementById('spawn').addEventListener('click',addDuck);
+      document.getElementById('toggle').addEventListener('click',event=>{running=!running;event.currentTarget.textContent=running?'Pause':'Resume';});
+      document.getElementById('reset').addEventListener('click',reset);
+      window.addEventListener('scroll',()=>{const rect=document.getElementById('story').getBoundingClientRect();const shift=Math.max(-40,Math.min(40,(window.innerHeight/2-(rect.top+rect.height/2))*.035));document.documentElement.style.setProperty('--story-shift',`${shift}px`);},{passive:true});
+      window.addEventListener('resize',()=>{resize(riverCanvas,riverContext);resize(densityCanvas,densityContext);});
+      riverImage.addEventListener('load',buildImageField); addDuck(); resize(riverCanvas,riverContext); resize(densityCanvas,densityContext); requestAnimationFrame(frame);
     </script>
   </body>
 </html>
