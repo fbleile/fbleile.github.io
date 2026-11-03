@@ -51,7 +51,7 @@
           <label for="duck-count">Ducks <output id="duck-count-value">1</output>
             <input id="duck-count" type="range" min="1" max="80" value="1" />
           </label>
-          <label for="bend">Widen the bend <output id="bend-value">0%</output>
+          <label for="bend">Widen the neck <output id="bend-value">0%</output>
             <input id="bend" type="range" min="0" max="100" value="0" />
           </label>
           <button id="toggle" type="button">Pause</button>
@@ -83,7 +83,7 @@
       const duckImage = new Image();
       const riverImage = new Image();
       duckImage.src = 'assets/pi-duck.png';
-      riverImage.src = 'assets/lazy-river.png';
+      riverImage.src = 'assets/lazy-river-narrow.png';
       const countInput = document.getElementById('duck-count');
       const bendInput = document.getElementById('bend');
       const countValue = document.getElementById('duck-count-value');
@@ -119,15 +119,14 @@
         return Math.min(difference, 1 - difference);
       }
 
-      function localFeature(s) {
-        return Math.exp(-Math.pow(angleDistance(s, .16) / .095, 2));
+      function neckFeature(s) {
+        return Math.exp(-Math.pow(angleDistance(s, 0) / .075, 2));
       }
 
       function riverPoint(s, offset = 0) {
         const angle = s * TAU;
-        const feature = localFeature(s) * Number(bendInput.value) / 100;
-        const radiusX = 1 + .18 * feature;
-        const radiusY = 1 + .08 * feature;
+        const radiusX = 1.18;
+        const radiusY = .68;
         return { x: Math.cos(angle) * radiusX + offset * Math.cos(angle), y: Math.sin(angle) * radiusY + offset * Math.sin(angle) };
       }
 
@@ -138,8 +137,14 @@
       }
 
       function speedAt(s) {
-        const feature = localFeature(s) * Number(bendInput.value) / 100;
-        return .095 * (1 - .68 * feature);
+        const width = channelWidth(s);
+        return .095 * (.22 / width);
+      }
+
+      function channelWidth(s) {
+        const neck = neckFeature(s);
+        const widening = Number(bendInput.value) / 100;
+        return .22 - .11 * neck + .11 * neck * widening;
       }
 
       function makeParticle(index) {
@@ -166,8 +171,9 @@
       function update(dt) {
         for (const particle of particles) {
           particle.s = (particle.s + speedAt(particle.s) * dt + .004 * Math.sqrt(dt) * randomNormal() + 1) % 1;
-          particle.offset += -3.5 * particle.offset * dt + .025 * Math.sqrt(dt) * randomNormal();
-          particle.offset = Math.max(-.14, Math.min(.14, particle.offset));
+          const width = channelWidth(particle.s);
+          particle.offset += -3.5 * particle.offset * dt + .04 * Math.sqrt(dt) * randomNormal();
+          particle.offset = Math.max(-width, Math.min(width, particle.offset));
           particle.history.push({ s: particle.s, offset: particle.offset });
           if (particle.history.length > HISTORY_LENGTH) particle.history.shift();
         }
