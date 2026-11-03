@@ -100,6 +100,8 @@
       riverImage.src = 'assets/lazy-river-narrow.png';
       duckImage.src = 'assets/pi-duck.png';
       const TAU = Math.PI * 2;
+      const WORLD_X = 1.4;
+      const WORLD_Y = .8;
       const ducks = [];
       const maxDucks = 500;
       const historyLength = 48;
@@ -138,8 +140,8 @@
       }
       function waterAt(x,y) {
         if(!imageField.pixels)return 0;
-        const px=Math.max(0,Math.min(imageField.width-1,Math.round((x/2.8+.5)*(imageField.width-1))));
-        const py=Math.max(0,Math.min(imageField.height-1,Math.round((.5-y/1.6)*(imageField.height-1))));
+        const px=Math.max(0,Math.min(imageField.width-1,Math.round((x/(2*WORLD_X)+.5)*(imageField.width-1))));
+        const py=Math.max(0,Math.min(imageField.height-1,Math.round((.5-y/(2*WORLD_Y))*(imageField.height-1))));
         const i=(py*imageField.width+px)*4; const p=imageField.pixels;
         return (p[i]*.15+p[i+1]*.45+p[i+2]*.4)*(p[i+3]/255)/imageField.max;
       }
@@ -153,6 +155,7 @@
         return imageField.ring.length ? imageField.ring[lower]*(1-fraction)+imageField.ring[upper]*fraction : 1;
       }
       function ringPoint(angle) { const radius=ringRadius(angle); return {x:radius*Math.cos(angle),y:radius*Math.sin(angle)}; }
+      function toCanvasPoint(x,y,width,height) { return {x:(x/(2*WORLD_X)+.5)*width,y:(.5-y/(2*WORLD_Y))*height}; }
       function fieldAt(x,y) {
         const step=.035;
         const gx=(smoothWaterAt(x+step,y)-smoothWaterAt(x-step,y))/(2*step);
@@ -202,13 +205,12 @@
       }
       function drawRiver(){
         const width=riverCanvas.clientWidth,height=riverCanvas.clientHeight; riverContext.clearRect(0,0,width,height); fitImage(riverContext,imageField.visual||riverImage,width,height,.97);
-        const scale=Math.min(width,height)*.37; riverContext.save(); riverContext.translate(width/2,height/2);
         ducks.forEach(duck=>{
-          duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(past.x*scale,-past.y*scale,2.1,0,TAU);riverContext.fill();});
-          const angle=Math.atan2(duck.y,duck.x),x=duck.x*scale,y=-duck.y*scale;
-          if(ducks.length<=16&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.translate(x,y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
-          else {riverContext.fillStyle='rgba(255,212,90,.52)';riverContext.beginPath();riverContext.arc(x,y,3,0,TAU);riverContext.fill();}
-        }); riverContext.restore();
+          duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;const point=toCanvasPoint(past.x,past.y,width,height);riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(point.x,point.y,2.1,0,TAU);riverContext.fill();});
+          const point=toCanvasPoint(duck.x,duck.y,width,height), angle=Math.atan2(duck.y,duck.x);
+          if(ducks.length<=16&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.translate(point.x,point.y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
+          else {riverContext.fillStyle='rgba(255,212,90,.52)';riverContext.beginPath();riverContext.arc(point.x,point.y,3,0,TAU);riverContext.fill();}
+        });
       }
       function drawDensity(){
         const width=densityCanvas.clientWidth,height=densityCanvas.clientHeight; densityContext.clearRect(0,0,width,height);
