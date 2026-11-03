@@ -244,6 +244,10 @@
       function update(dt) {
         ducks.forEach(duck=>{
           const field=vectorAt(duck.x,duck.y);
+          const angle=Math.atan2(duck.y,duck.x);
+          const center=ringPoint(angle);
+          const radius=Math.hypot(duck.x,duck.y);
+          const inside=radius>=boundaryRadius(imageField.inner,angle)&&radius<=boundaryRadius(imageField.outer,angle);
           const deviation=(10+Math.random()*60)*Math.PI/180;
           const meanForward=(Math.sin(70*Math.PI/180)-Math.sin(10*Math.PI/180))/(60*Math.PI/180);
           const forwardNoise=Math.cos(deviation)-meanForward;
@@ -251,8 +255,9 @@
           const kick=.18*Math.sqrt(dt);
           const noiseX=(field.x*forwardNoise-field.y*lateralNoise)*kick;
           const noiseY=(field.y*forwardNoise+field.x*lateralNoise)*kick;
-          duck.x += field.x*dt + noiseX;
-          duck.y += field.y*dt + noiseY;
+          const restoringStrength=inside?2.1:.25;
+          duck.x += field.x*dt + (center.x-duck.x)*restoringStrength*dt + noiseX;
+          duck.y += field.y*dt + (center.y-duck.y)*restoringStrength*dt + noiseY;
           if(ducks.length<=16){duck.history.push({x:duck.x,y:duck.y});if(duck.history.length>historyLength)duck.history.shift();}else duck.history.length=0;
         });
         elapsed+=dt;
