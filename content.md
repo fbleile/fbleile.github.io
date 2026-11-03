@@ -16,9 +16,11 @@ Outside research, I enjoy hiking, cycling and skiing. I am also curious about [�
 
 {{video:publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4}}
 
-*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Presentation](publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · [Idyll notebook](notebooks/efficient-learning-stationary-diffusions/) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
+*[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Presentation](publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
 
-## Notebooks
+## Explorables
+
+[Explorable Explanations](https://explorabl.es/) is an effort to make learning a playful process. One of my favorites is exploring [attractors](https://ncase.me/attractors/), which uses [Idyll notebook](https://idyll-lang.org/docs). I love the idea of explorable papers -- in this section I try to introduce my research in a playful way. I hope you enjoy and I am always happy for feedback of any kind!
 
 {{notebook:Stationary Diffusions|Explore particles under a reverting ODE, Brownian motion, and their stationary combination.|notebooks/efficient-learning-stationary-diffusions/}}
 
