@@ -29,7 +29,8 @@
       .simulation { padding:14px; border:2px solid #151318; background:transparent; box-shadow:7px 7px 0 #15131820; }
       .controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 0 10px; }
       button { border:1px solid var(--duck); border-radius:3px; padding:.6rem .75rem; background:var(--duck); color:#1a0f05; font:700 .72rem 'Space Mono',monospace; cursor:pointer; }
-      button.secondary { border-color:#b5aca1; background:transparent; color:#eeeaf4; }
+      button.secondary { border-color:#efeade; background:#efeade; color:#151318; }
+      button:hover, button:focus-visible { filter:brightness(1.08); outline:2px solid var(--sample); outline-offset:2px; }
       .count { margin-left:auto; color:#d8d0c6; font-size:.7rem; }
       .simulation-panels { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(190px,.8fr); gap:10px; }
       .canvas-wrap { position:relative; }
@@ -78,7 +79,7 @@
               <button id="spawn" type="button">＋ Spawn duck</button>
               <button id="toggle" class="secondary" type="button">Pause</button>
               <button id="reset" class="secondary" type="button">Reset</button>
-              <span class="count">ducks: <output id="count">1</output></span>
+              <span class="count">ducks: <output id="count">1 / 500</output></span>
             </div>
             <div class="simulation-panels">
               <div class="canvas-wrap"><canvas id="river" aria-label="Animated ducks in a river"></canvas></div>
@@ -100,8 +101,10 @@
       duckImage.src = 'assets/pi-duck.png';
       const TAU = Math.PI * 2;
       const ducks = [];
+      const maxDucks = 500;
       const historyLength = 48;
       const imageField = { pixels:null, width:0, height:0, max:1, ring:[] };
+      const spawnButton = document.getElementById('spawn');
       let running = true; let previous = performance.now(); let elapsed = 0;
 
       function resize(canvas, context) {
@@ -165,9 +168,17 @@
         const gradientStrength=.35;
         return { x:tangent.x*.72 + normal.x*2.7 + gx*gradientStrength, y:tangent.y*.72 + normal.y*2.7 + gy*gradientStrength, tangent, normalDirection };
       }
-      function addDuck() { ducks.push({x:1.12+normal()*.035,y:normal()*.05,history:[]}); updateCount(); }
-      function updateCount() { document.getElementById('count').value=ducks.length; }
-      function reset() { ducks.length=0; addDuck(); elapsed=0; }
+      function spawnBatch() { return ducks.length<10 ? 1 : ducks.length<100 ? 10 : 50; }
+      function addDucks(amount=1) {
+        const number=Math.min(amount,maxDucks-ducks.length);
+        for(let i=0;i<number;i++) { const angle=Math.random()*TAU; const radius=ringRadius(angle)+normal()*.045; ducks.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle),history:[]}); }
+        updateCount();
+      }
+      function updateCount() {
+        document.getElementById('count').value=`${ducks.length} / ${maxDucks}`;
+        spawnButton.textContent=ducks.length>=maxDucks?'Maximum reached':`＋ Spawn ${spawnBatch()===1?'duck':`${spawnBatch()} ducks`}`;
+      }
+      function reset() { ducks.length=0; addDucks(1); elapsed=0; }
       function update(dt) {
         ducks.forEach(duck=>{
           const field=fieldAt(duck.x,duck.y);
@@ -209,12 +220,12 @@
         densityContext.fillStyle='#b7b0a7';densityContext.font='10px "Space Mono"';densityContext.fillText('position around the river →',left,height-6);
       }
       function frame(now){const dt=Math.min((now-previous)/1000,.04);previous=now;if(running)update(dt);drawRiver();drawDensity();requestAnimationFrame(frame);}
-      document.getElementById('spawn').addEventListener('click',addDuck);
+      spawnButton.addEventListener('click',()=>addDucks(spawnBatch()));
       document.getElementById('toggle').addEventListener('click',event=>{running=!running;event.currentTarget.textContent=running?'Pause':'Resume';});
       document.getElementById('reset').addEventListener('click',reset);
       window.addEventListener('scroll',()=>{const rect=document.getElementById('story').getBoundingClientRect();const shift=Math.max(-40,Math.min(40,(window.innerHeight/2-(rect.top+rect.height/2))*.035));document.documentElement.style.setProperty('--story-shift',`${shift}px`);},{passive:true});
       window.addEventListener('resize',()=>{resize(riverCanvas,riverContext);resize(densityCanvas,densityContext);});
-      riverImage.addEventListener('load',buildImageField); addDuck(); resize(riverCanvas,riverContext); resize(densityCanvas,densityContext); requestAnimationFrame(frame);
+      riverImage.addEventListener('load',buildImageField); addDucks(1); resize(riverCanvas,riverContext); resize(densityCanvas,densityContext); requestAnimationFrame(frame);
     </script>
   </body>
 </html>
