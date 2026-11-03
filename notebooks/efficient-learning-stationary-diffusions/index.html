@@ -105,7 +105,7 @@
       const ducks = [];
       const maxDucks = 10000;
       const historyLength = 48;
-      const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[], boundaries:[], grid:null };
+      const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[], inner:[], outer:[], boundaries:[], grid:null };
       const spawnButton = document.getElementById('spawn');
       let running = true; let previous = performance.now(); let elapsed = 0;
 
@@ -141,7 +141,7 @@
         }
         imageField.ring=rawRing.map((_,index)=>{let total=0;for(let offset=-5;offset<=5;offset++)total+=rawRing[(index+offset+360)%360];return total/11;});
         imageField.widths=rawWidths.map((_,index)=>{let total=0;for(let offset=-5;offset<=5;offset++)total+=rawWidths[(index+offset+360)%360];return total/11;});
-        imageField.boundaries=[];
+        imageField.boundaries=[]; const rawInner=[]; const rawOuter=[];
         for(let index=0;index<720;index++){
           const angle=index/720*TAU; const segments=[]; let inWater=false; let start=0;
           for(let radius=.35;radius<1.5;radius+=.006){
@@ -153,9 +153,12 @@
           const segment=segments.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]))[0];
           const inner=segment?segment[0]:ringRadius(angle)-riverWidth(angle);
           const outer=segment?segment[1]:ringRadius(angle)+riverWidth(angle);
+          rawInner.push(inner); rawOuter.push(outer);
           imageField.boundaries.push({x:inner*Math.cos(angle),y:inner*Math.sin(angle)});
           imageField.boundaries.push({x:outer*Math.cos(angle),y:outer*Math.sin(angle)});
         }
+        const smoothProfile=profile=>profile.map((_,index)=>{let total=0;for(let offset=-5;offset<=5;offset++)total+=profile[(index+offset+720)%720];return total/11;});
+        imageField.inner=smoothProfile(rawInner); imageField.outer=smoothProfile(rawOuter);
         buildSmoothedVectorGrid();
       }
       function waterAt(x,y) {
@@ -171,12 +174,15 @@
         return sum/12;
       }
       function ringRadius(angle) {
-        const position=wrapAngle(angle)/TAU*360; const lower=Math.floor(position)%360; const upper=(lower+1)%360; const fraction=position-Math.floor(position);
-        return imageField.ring.length ? imageField.ring[lower]*(1-fraction)+imageField.ring[upper]*fraction : 1;
+        return (boundaryRadius(imageField.inner,angle)+boundaryRadius(imageField.outer,angle))*.5;
       }
       function riverWidth(angle) {
-        const position=wrapAngle(angle)/TAU*360; const lower=Math.floor(position)%360; const upper=(lower+1)%360; const fraction=position-Math.floor(position);
-        return imageField.widths.length ? imageField.widths[lower]*(1-fraction)+imageField.widths[upper]*fraction : .09;
+        return Math.max(.045,(boundaryRadius(imageField.outer,angle)-boundaryRadius(imageField.inner,angle))*.5);
+      }
+      function boundaryRadius(profile,angle) {
+        if(!profile.length)return 1;
+        const position=wrapAngle(angle)/TAU*profile.length; const lower=Math.floor(position)%profile.length; const upper=(lower+1)%profile.length; const fraction=position-Math.floor(position);
+        return profile[lower]*(1-fraction)+profile[upper]*fraction;
       }
       function ringPoint(angle) { const radius=ringRadius(angle); return {x:radius*Math.cos(angle),y:radius*Math.sin(angle)}; }
       function projectToRiver(x,y) {
@@ -189,7 +195,7 @@
         if(!imageField.boundaries.length)return {x:0,y:1};
         let first=null,second=null,firstDistance=Infinity,secondDistance=Infinity;
         imageField.boundaries.forEach(point=>{const distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);if(distance<firstDistance){second=first;secondDistance=firstDistance;first=point;firstDistance=distance;}else if(distance<secondDistance){second=point;secondDistance=distance;}});
-        const angle=Math.atan2(y,x); const inner=ringRadius(angle)-riverWidth(angle); const outer=ringRadius(angle)+riverWidth(angle); const radius=Math.hypot(x,y);
+        const angle=Math.atan2(y,x); const inner=boundaryRadius(imageField.inner,angle); const outer=boundaryRadius(imageField.outer,angle); const radius=Math.hypot(x,y);
         const center=ringPoint(angle); const centerVector={x:center.x-x,y:center.y-y}; const centerLength=Math.hypot(centerVector.x,centerVector.y)||1;
         if(radius<inner||radius>outer){
           const length=Math.sqrt(firstDistance)||1; const inward={x:(first.x-x)/length,y:(first.y-y)/length};
@@ -199,9 +205,10 @@
           const vx=inward.x*.88+tangent.x*.12,vy=inward.y*.88+tangent.y*.12,fieldLength=Math.hypot(vx,vy)||1;
           return {x:vx/fieldLength,y:vy/fieldLength};
         }
-        const chord={x:second.x-first.x,y:second.y-first.y}; const length=Math.hypot(chord.x,chord.y)||1;
-        let tangent={x:-chord.y/length,y:chord.x/length};
-        if(tangent.x*(-y)+tangent.y*x<0)tangent={x:-tangent.x,y:-tangent.y};
+        const before=ringPoint(angle-.012), after=ringPoint(angle+.012); const chord={x:after.x-before.x,y:after.y-before.y}; const length=Math.hypot(chord.x,chord.y)||1;
+        let tangent={x:chord.x/length,y:chord.y/length};
+        const ccw={x:-center.y,y:center.x};
+        if(tangent.x*ccw.x+tangent.y*ccw.y<0)tangent={x:-tangent.x,y:-tangent.y};
         const restoring={x:centerVector.x/centerLength,y:centerVector.y/centerLength};
         const vx=tangent.x*.88+restoring.x*.12,vy=tangent.y*.88+restoring.y*.12,fieldLength=Math.hypot(vx,vy)||1;
         return {x:vx/fieldLength,y:vy/fieldLength};
