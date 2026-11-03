@@ -105,7 +105,7 @@
       const ducks = [];
       const maxDucks = 10000;
       const historyLength = 48;
-      const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[] };
+      const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[], boundaries:[], grid:null };
       const spawnButton = document.getElementById('spawn');
       let running = true; let previous = performance.now(); let elapsed = 0;
 
@@ -141,6 +141,22 @@
         }
         imageField.ring=rawRing.map((_,index)=>{let total=0;for(let offset=-5;offset<=5;offset++)total+=rawRing[(index+offset+360)%360];return total/11;});
         imageField.widths=rawWidths.map((_,index)=>{let total=0;for(let offset=-5;offset<=5;offset++)total+=rawWidths[(index+offset+360)%360];return total/11;});
+        imageField.boundaries=[];
+        for(let index=0;index<720;index++){
+          const angle=index/720*TAU; const segments=[]; let inWater=false; let start=0;
+          for(let radius=.35;radius<1.5;radius+=.006){
+            const wet=waterAt(radius*Math.cos(angle),radius*Math.sin(angle))>.055;
+            if(wet&&!inWater){start=radius;inWater=true;}
+            if(!wet&&inWater){segments.push([start,radius]);inWater=false;}
+          }
+          if(inWater)segments.push([start,1.5]);
+          const segment=segments.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]))[0];
+          const inner=segment?segment[0]:ringRadius(angle)-riverWidth(angle);
+          const outer=segment?segment[1]:ringRadius(angle)+riverWidth(angle);
+          imageField.boundaries.push({x:inner*Math.cos(angle),y:inner*Math.sin(angle)});
+          imageField.boundaries.push({x:outer*Math.cos(angle),y:outer*Math.sin(angle)});
+        }
+        buildSmoothedVectorGrid();
       }
       function waterAt(x,y) {
         if(!imageField.pixels)return 0;
@@ -169,20 +185,30 @@
         return {x:center.x+center.x/length*offset,y:center.y+center.y/length*offset};
       }
       function toCanvasPoint(x,y,width,height) { return {x:(x/(2*WORLD_X)+.5)*width,y:(.5-y/(2*WORLD_Y))*height}; }
-      function fieldAt(x,y) {
-        const step=.035;
-        const gx=(smoothWaterAt(x+step,y)-smoothWaterAt(x-step,y))/(2*step);
-        const gy=(smoothWaterAt(x,y+step)-smoothWaterAt(x,y-step))/(2*step);
-        const angle=Math.atan2(y,x);
-        const center=ringPoint(angle);
-        const normal={x:center.x-x,y:center.y-y};
-        const normalLength=Math.hypot(normal.x,normal.y)||1;
-        const normalDirection={x:normal.x/normalLength,y:normal.y/normalLength};
-        const before=ringPoint(angle-.015), after=ringPoint(angle+.015);
-        const tangentLength=Math.hypot(after.x-before.x,after.y-before.y);
-        const tangent={x:(after.x-before.x)/tangentLength,y:(after.y-before.y)/tangentLength};
-        const gradientStrength=.35;
-        return { x:tangent.x*.72 + normal.x*2.7 + gx*gradientStrength, y:tangent.y*.72 + normal.y*2.7 + gy*gradientStrength, tangent, normalDirection };
+      function rawBoundaryVector(x,y) {
+        if(!imageField.boundaries.length)return {x:0,y:1};
+        let first=null,second=null,firstDistance=Infinity,secondDistance=Infinity;
+        imageField.boundaries.forEach(point=>{const distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);if(distance<firstDistance){second=first;secondDistance=firstDistance;first=point;firstDistance=distance;}else if(distance<secondDistance){second=point;secondDistance=distance;}});
+        const angle=Math.atan2(y,x); const inner=ringRadius(angle)-riverWidth(angle); const outer=ringRadius(angle)+riverWidth(angle); const radius=Math.hypot(x,y);
+        if(radius<inner||radius>outer){const length=Math.sqrt(firstDistance)||1;return {x:(first.x-x)/length,y:(first.y-y)/length};}
+        const chord={x:second.x-first.x,y:second.y-first.y}; const length=Math.hypot(chord.x,chord.y)||1;
+        let tangent={x:-chord.y/length,y:chord.x/length};
+        if(tangent.x*(-y)+tangent.y*x<0)tangent={x:-tangent.x,y:-tangent.y};
+        return tangent;
+      }
+      function buildSmoothedVectorGrid() {
+        const columns=96, rows=64, vectors=[];
+        for(let row=0;row<rows;row++)for(let column=0;column<columns;column++){const x=-WORLD_X+(column+.5)/columns*(2*WORLD_X),y=WORLD_Y-(row+.5)/rows*(2*WORLD_Y);vectors.push(rawBoundaryVector(x,y));}
+        const blur=input=>{const output=[],weights=[1,4,6,4,1];for(let row=0;row<rows;row++)for(let column=0;column<columns;column++){let x=0,y=0,total=0;for(let offset=-2;offset<=2;offset++){const c=Math.max(0,Math.min(columns-1,column+offset)),weight=weights[offset+2],value=input[row*columns+c];x+=value.x*weight;y+=value.y*weight;total+=weight;}output.push({x:x/total,y:y/total});}return output;};
+        imageField.grid={columns,rows,vectors:blur(blur(vectors))};
+      }
+      function vectorAt(x,y) {
+        const grid=imageField.grid;if(!grid)return {x:0,y:1};
+        const column=Math.max(0,Math.min(grid.columns-1,(x+WORLD_X)/(2*WORLD_X)*grid.columns-.5)),row=Math.max(0,Math.min(grid.rows-1,(WORLD_Y-y)/(2*WORLD_Y)*grid.rows-.5));
+        const c0=Math.floor(column),r0=Math.floor(row),c1=Math.min(grid.columns-1,c0+1),r1=Math.min(grid.rows-1,r0+1),cx=column-c0,ry=row-r0;
+        const a=grid.vectors[r0*grid.columns+c0],b=grid.vectors[r0*grid.columns+c1],c=grid.vectors[r1*grid.columns+c0],d=grid.vectors[r1*grid.columns+c1];
+        const vx=(a.x*(1-cx)+b.x*cx)*(1-ry)+(c.x*(1-cx)+d.x*cx)*ry,vy=(a.y*(1-cx)+b.y*cx)*(1-ry)+(c.y*(1-cx)+d.y*cx)*ry,length=Math.hypot(vx,vy)||1;
+        return {x:vx/length,y:vy/length};
       }
       function spawnBatch() { return ducks.length<10 ? 1 : ducks.length<100 ? 10 : ducks.length<1000 ? 100 : 1000; }
       function addDucks(amount=1) {
@@ -197,15 +223,14 @@
       function reset() { ducks.length=0; addDucks(1); elapsed=0; }
       function update(dt) {
         ducks.forEach(duck=>{
-          const field=fieldAt(duck.x,duck.y);
+          const field=vectorAt(duck.x,duck.y);
           const deviation=(10+Math.random()*60)*Math.PI/180;
           const direction=(Math.random()<.5?-deviation:deviation);
           const kick=.06*Math.sqrt(dt);
-          const noiseX=field.tangent.x*Math.cos(direction)*kick+field.normalDirection.x*Math.sin(direction)*kick;
-          const noiseY=field.tangent.y*Math.cos(direction)*kick+field.normalDirection.y*Math.sin(direction)*kick;
+          const noiseX=field.x*Math.cos(direction)*kick-field.y*Math.sin(direction)*kick;
+          const noiseY=field.y*Math.cos(direction)*kick+field.x*Math.sin(direction)*kick;
           duck.x += field.x*dt + noiseX;
           duck.y += field.y*dt + noiseY;
-          const projected=projectToRiver(duck.x,duck.y); duck.x=projected.x; duck.y=projected.y;
           if(ducks.length<=16){duck.history.push({x:duck.x,y:duck.y});if(duck.history.length>historyLength)duck.history.shift();}else duck.history.length=0;
         });
         elapsed+=dt;
