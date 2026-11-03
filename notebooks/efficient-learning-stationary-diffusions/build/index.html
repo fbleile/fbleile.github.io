@@ -242,10 +242,12 @@
         ducks.forEach(duck=>{
           const field=vectorAt(duck.x,duck.y);
           const deviation=(10+Math.random()*60)*Math.PI/180;
-          const direction=(Math.random()<.5?-deviation:deviation);
-          const kick=.14*Math.sqrt(dt);
-          const noiseX=field.x*Math.cos(direction)*kick-field.y*Math.sin(direction)*kick;
-          const noiseY=field.y*Math.cos(direction)*kick+field.x*Math.sin(direction)*kick;
+          const meanForward=(Math.sin(70*Math.PI/180)-Math.sin(10*Math.PI/180))/(60*Math.PI/180);
+          const forwardNoise=Math.cos(deviation)-meanForward;
+          const lateralNoise=(Math.random()<.5?-1:1)*Math.sin(deviation);
+          const kick=.18*Math.sqrt(dt);
+          const noiseX=(field.x*forwardNoise-field.y*lateralNoise)*kick;
+          const noiseY=(field.y*forwardNoise+field.x*lateralNoise)*kick;
           duck.x += field.x*dt + noiseX;
           duck.y += field.y*dt + noiseY;
           if(ducks.length<=16){duck.history.push({x:duck.x,y:duck.y});if(duck.history.length>historyLength)duck.history.shift();}else duck.history.length=0;
