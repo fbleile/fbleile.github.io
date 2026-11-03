@@ -79,7 +79,7 @@
               <button id="spawn" type="button">＋ Spawn duck</button>
               <button id="toggle" class="secondary" type="button">Pause</button>
               <button id="reset" class="secondary" type="button">Reset</button>
-              <span class="count">ducks: <output id="count">1 / 500</output></span>
+              <span class="count">ducks: <output id="count">1 / 10000</output></span>
             </div>
             <div class="simulation-panels">
               <div class="canvas-wrap"><canvas id="river" aria-label="Animated ducks in a river"></canvas></div>
@@ -103,7 +103,7 @@
       const WORLD_X = 1.4;
       const WORLD_Y = .8;
       const ducks = [];
-      const maxDucks = 2000;
+      const maxDucks = 10000;
       const historyLength = 48;
       const imageField = { pixels:null, width:0, height:0, max:1, ring:[], widths:[] };
       const spawnButton = document.getElementById('spawn');
@@ -184,7 +184,7 @@
         const gradientStrength=.35;
         return { x:tangent.x*.72 + normal.x*2.7 + gx*gradientStrength, y:tangent.y*.72 + normal.y*2.7 + gy*gradientStrength, tangent, normalDirection };
       }
-      function spawnBatch() { return ducks.length<10 ? 1 : ducks.length<100 ? 10 : ducks.length<500 ? 50 : 250; }
+      function spawnBatch() { return ducks.length<10 ? 1 : ducks.length<100 ? 10 : ducks.length<1000 ? 100 : 1000; }
       function addDucks(amount=1) {
         const number=Math.min(amount,maxDucks-ducks.length);
         for(let i=0;i<number;i++) { const angle=Math.random()*TAU; const radius=ringRadius(angle)+normal()*riverWidth(angle)*.65; ducks.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle),history:[]}); }
@@ -224,7 +224,7 @@
           duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;const point=toCanvasPoint(past.x,past.y,width,height);riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(point.x,point.y,2.1,0,TAU);riverContext.fill();});
           const point=toCanvasPoint(duck.x,duck.y,width,height), angle=Math.atan2(duck.y,duck.x);
           if(ducks.length<=16&&duckImage.complete&&duckImage.naturalWidth){riverContext.save();riverContext.translate(point.x,point.y);riverContext.rotate(-angle+Math.PI/2);riverContext.drawImage(duckImage,-16,-18,32,36);riverContext.restore();}
-          else {const alpha=Math.max(.018,Math.min(.18,12/ducks.length));riverContext.fillStyle=`rgba(255,212,90,${alpha})`;riverContext.beginPath();riverContext.arc(point.x,point.y,3,0,TAU);riverContext.fill();}
+          else {const alpha=Math.max(.03,Math.min(.18,3/Math.sqrt(ducks.length)));riverContext.fillStyle=`rgba(255,212,90,${alpha})`;riverContext.beginPath();riverContext.arc(point.x,point.y,3.6,0,TAU);riverContext.fill();}
         });
         if(densePopulation)riverContext.restore();
       }
