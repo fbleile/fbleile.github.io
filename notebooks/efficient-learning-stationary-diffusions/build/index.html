@@ -243,7 +243,7 @@
           const field=vectorAt(duck.x,duck.y);
           const deviation=(10+Math.random()*60)*Math.PI/180;
           const direction=(Math.random()<.5?-deviation:deviation);
-          const kick=.06*Math.sqrt(dt);
+          const kick=.14*Math.sqrt(dt);
           const noiseX=field.x*Math.cos(direction)*kick-field.y*Math.sin(direction)*kick;
           const noiseY=field.y*Math.cos(direction)*kick+field.x*Math.sin(direction)*kick;
           duck.x += field.x*dt + noiseX;
