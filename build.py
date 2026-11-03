@@ -13,6 +13,8 @@ def inline(text: str) -> str:
 def markdown_to_html(markdown: str) -> str:
     output = []
     list_open = False
+    notebook_open = False
+    notebook_count = 0
 
     def close_list() -> None:
         nonlocal list_open
@@ -20,28 +22,54 @@ def markdown_to_html(markdown: str) -> str:
             output.append('</ul>')
             list_open = False
 
+    def close_notebooks() -> None:
+        nonlocal notebook_open
+        if notebook_open:
+            output.append('</div>')
+            notebook_open = False
+
     for raw_line in markdown.replace('\r', '').splitlines():
         line = raw_line.strip()
         if not line:
             close_list()
+            close_notebooks()
             continue
         heading = re.match(r'^(#{1,3})\s+(.+)$', line)
         item = re.match(r'^[-*]\s+(.+)$', line)
         video = re.fullmatch(r'\{\{video:([^}]+)\}\}', line)
+        notebook = re.fullmatch(r'\{\{notebook:([^|]+)\|([^|]+)\|([^}]+)\}\}', line)
         if heading:
             close_list()
+            close_notebooks()
             level = len(heading.group(1))
             text = heading.group(2)
             slug = re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
             output.append(f'<h{level} id="{slug}">{inline(text)}</h{level}>')
         elif video:
             close_list()
+            close_notebooks()
             source = escape(video.group(1).strip(), quote=True)
             poster = re.sub(r'\.[^./]+$', '-poster.jpg', source)
             output.append(
                 f'<video class="paper-video" data-hover-video tabindex="0" role="button" src="{source}" poster="{poster}" '
                 'muted loop playsinline preload="metadata" '
                 'aria-label="Publication video preview"></video>'
+            )
+        elif notebook:
+            close_list()
+            if not notebook_open:
+                output.append('<div class="notebook-slider" aria-label="Interactive notebooks">')
+                notebook_open = True
+                notebook_count = 0
+            notebook_count += 1
+            title, description, href = (part.strip() for part in notebook.groups())
+            output.append(
+                '<article class="notebook-card">'
+                f'<div class="notebook-index">Notebook {notebook_count:02d}</div>'
+                f'<h3>{escape(title)}</h3>'
+                f'<p>{escape(description)}</p>'
+                f'<a class="notebook-link" href="{escape(href, quote=True)}">Open notebook <span aria-hidden="true">→</span></a>'
+                '</article>'
             )
         elif item:
             if not list_open:
@@ -50,9 +78,11 @@ def markdown_to_html(markdown: str) -> str:
             output.append(f'<li>{inline(item.group(1))}</li>')
         else:
             close_list()
+            close_notebooks()
             output.append(f'<p>{inline(line)}</p>')
 
     close_list()
+    close_notebooks()
     return '\n'.join(output)
 
 

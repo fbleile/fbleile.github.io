@@ -38,6 +38,12 @@
     ul { margin:0 0 22px; padding-left:24px; }
     .paper-video { float:right; width:min(42%, 280px); margin:0 0 18px 26px; border-radius:10px; background:#202a2e; box-shadow:0 8px 24px rgba(32,42,46,.12); }
     #content::after { display:block; clear:both; content:""; }
+    .notebook-slider { display:flex; flex-direction:column; gap:14px; max-height:330px; margin:20px 0 28px; overflow-y:auto; padding:4px 12px 4px 0; scroll-snap-type:y mandatory; scrollbar-color:var(--accent) var(--line); }
+    .notebook-card { min-height:220px; display:flex; flex-direction:column; justify-content:center; scroll-snap-align:start; padding:28px 30px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(135deg, #f7fbfa, #eef5f3); }
+    .notebook-index { color:var(--accent); font:600 .75rem/1 system-ui, sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+    .notebook-card h3 { margin:12px 0 8px; font-size:1.45rem; }
+    .notebook-card p { max-width:560px; color:var(--muted); }
+    .notebook-link { align-self:flex-start; margin-top:8px; font-family:system-ui, sans-serif; font-size:.9rem; font-weight:600; }
     footer { padding:22px 0 34px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
     footer p { margin:0 0 10px; }
     .footer-links { display:flex; flex-wrap:wrap; gap:4px 18px; }
@@ -58,7 +64,7 @@
     <div class="shell header-content">
       <div class="masthead"><a class="name" href="#top">Fabian Bleile</a><p class="role">PhD Candidate Mathematical Statistics</p></div>
       <nav aria-label="Primary navigation">
-        <a href="#about">About</a><a href="#publications">Publications</a><a href="#cv">CV</a>
+        <a href="#about">About</a><a href="#publications">Publications</a><a href="#notebooks">Notebooks</a><a href="#cv">CV</a>
       </nav>
     </div>
   </header>
@@ -72,6 +78,10 @@
 <h3 id="efficient-learning-of-stationary-diffusions-with-stein-type-discrepancies">Efficient Learning of Stationary Diffusions with Stein-type Discrepancies</h3>
 <video class="paper-video" data-hover-video tabindex="0" role="button" src="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser.mp4" poster="publications/efficient-learning-stationary-diffusions/StationaryDiffusionTeaser-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>
 <p><em><a href="https://proceedings.mlr.press/v300/bleile26a.html">Paper</a> · <a href="publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf">Presentation</a> · <a href="publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf">Poster</a> · <a href="notebooks/efficient-learning-stationary-diffusions/">Idyll notebook</a> · AISTATS 2026 · with Sarah Lumpp and Mathias Drton</em></p>
+<h2 id="notebooks">Notebooks</h2>
+<div class="notebook-slider" aria-label="Interactive notebooks">
+<article class="notebook-card"><div class="notebook-index">Notebook 01</div><h3>Stationary Diffusions</h3><p>Explore particles under a reverting ODE, Brownian motion, and their stationary combination.</p><a class="notebook-link" href="notebooks/efficient-learning-stationary-diffusions/">Open notebook <span aria-hidden="true">→</span></a></article>
+</div>
 <h2 id="other-projects">Other Projects</h2>
 <h3 id="optimal-train-routing-and-scheduling">Optimal Train Routing and Scheduling</h3>
 <video class="paper-video" data-hover-video tabindex="0" role="button" src="projects/train_routing/trainrouting.mp4" poster="projects/train_routing/trainrouting-poster.jpg" muted loop playsinline preload="metadata" aria-label="Publication video preview"></video>

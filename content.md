@@ -18,6 +18,10 @@ Outside research, I enjoy hiking, cycling and skiing. I am also curious about [�
 
 *[Paper](https://proceedings.mlr.press/v300/bleile26a.html) · [Presentation](publications/efficient-learning-stationary-diffusions/IMS_Salzburg.pdf) · [Poster](publications/efficient-learning-stationary-diffusions/PosterBleile-AISTATS26.pdf) · [Idyll notebook](notebooks/efficient-learning-stationary-diffusions/) · AISTATS 2026 · with Sarah Lumpp and Mathias Drton*
 
+## Notebooks
+
+{{notebook:Stationary Diffusions|Explore particles under a reverting ODE, Brownian motion, and their stationary combination.|notebooks/efficient-learning-stationary-diffusions/}}
+
 ## Other Projects
 
 ### Optimal Train Routing and Scheduling
