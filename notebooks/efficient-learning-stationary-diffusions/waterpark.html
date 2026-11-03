@@ -79,7 +79,7 @@
               <button id="spawn" type="button">＋ Spawn duck</button>
               <button id="toggle" class="secondary" type="button">Pause</button>
               <button id="reset" class="secondary" type="button">Reset</button>
-              <span class="count">ducks: <output id="count">1 / 10000</output></span>
+              <span class="count">ducks: <output id="count">1 / 100000</output></span>
             </div>
             <div class="simulation-panels">
               <div class="canvas-wrap"><canvas id="river" aria-label="Animated ducks in a river"></canvas></div>
@@ -103,7 +103,11 @@
       const WORLD_X = 1.4;
       const WORLD_Y = .8;
       const ducks = [];
-      const maxDucks = 10000;
+      const maxDucks = 100000;
+      const populationThreshold = 1000;
+      const populationBins = new Float32Array(360);
+      let populationMode = false;
+      let populationCount = 0;
       const historyLength = 48;
       const densityBins = 120;
       const densityAverage = new Float32Array(densityBins);
@@ -230,18 +234,36 @@
         const vx=(a.x*(1-cx)+b.x*cx)*(1-ry)+(c.x*(1-cx)+d.x*cx)*ry,vy=(a.y*(1-cx)+b.y*cx)*(1-ry)+(c.y*(1-cx)+d.y*cx)*ry,length=Math.hypot(vx,vy)||1;
         return {x:vx/length,y:vy/length};
       }
-      function spawnBatch() { return ducks.length<10 ? 1 : ducks.length<100 ? 10 : ducks.length<1000 ? 100 : 1000; }
+      function totalDucks() { return populationMode ? populationCount : ducks.length; }
+      function spawnBatch() { const total=totalDucks(); return total<10 ? 1 : total<100 ? 10 : total<1000 ? 100 : total<10000 ? 1000 : 10000; }
+      function addToPopulation(amount) { for(let i=0;i<amount;i++)populationBins[Math.floor(Math.random()*populationBins.length)] += 1; populationCount += amount; }
       function addDucks(amount=1) {
-        const number=Math.min(amount,maxDucks-ducks.length);
-        for(let i=0;i<number;i++) { const angle=Math.random()*TAU; const radius=ringRadius(angle)+normal()*riverWidth(angle)*.65; ducks.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle),history:[]}); }
+        const number=Math.min(amount,maxDucks-totalDucks());
+        if(number<=0){updateCount();return;}
+        if(populationMode){addToPopulation(number);updateCount();return;}
+        const individual=Math.min(number,Math.max(0,populationThreshold-ducks.length));
+        for(let i=0;i<individual;i++){const angle=Math.random()*TAU;const radius=ringRadius(angle)+normal()*riverWidth(angle)*.65;ducks.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle),history:[]});}
+        const remainder=number-individual;
+        if(remainder>0){ducks.forEach(duck=>{populationBins[Math.floor(wrapAngle(Math.atan2(duck.y,duck.x))/TAU*populationBins.length)] += 1;});populationCount=ducks.length;ducks.length=0;populationMode=true;addToPopulation(remainder);}
         updateCount();
       }
       function updateCount() {
-        document.getElementById('count').value=`${ducks.length} / ${maxDucks}`;
-        spawnButton.textContent=ducks.length>=maxDucks?'Maximum reached':`＋ Spawn ${spawnBatch()===1?'duck':`${spawnBatch()} ducks`}`;
+        document.getElementById('count').value=`${totalDucks()} / ${maxDucks}`;
+        spawnButton.textContent=totalDucks()>=maxDucks?'Maximum reached':`＋ Spawn ${spawnBatch()===1?'duck':`${spawnBatch()} ducks`}`;
       }
-      function reset() { ducks.length=0; densityAverage.fill(0); densityAverageReady=false; addDucks(1); elapsed=0; }
+      function reset() { ducks.length=0;populationBins.fill(0);populationMode=false;populationCount=0;densityAverage.fill(0);densityAverageReady=false;addDucks(1);elapsed=0; }
+      function updatePopulation(dt) {
+        const next=new Float32Array(populationBins.length); const diffusion=Math.min(.18,.04+dt*.7);
+        for(let destination=0;destination<populationBins.length;destination++){
+          const source=(destination-.72*dt/(TAU*.95)*populationBins.length+populationBins.length)%populationBins.length; const lower=Math.floor(source),upper=(lower+1)%populationBins.length,fraction=source-lower;
+          const advected=populationBins[lower]*(1-fraction)+populationBins[upper]*fraction;
+          const left=populationBins[(destination-1+populationBins.length)%populationBins.length],right=populationBins[(destination+1)%populationBins.length];
+          next[destination]=advected*(1-diffusion)+diffusion*(left+right)*.5;
+        }
+        populationBins.set(next);
+      }
       function update(dt) {
+        if(populationMode){updatePopulation(dt);elapsed+=dt;return;}
         ducks.forEach(duck=>{
           const field=vectorAt(duck.x,duck.y);
           const angle=Math.atan2(duck.y,duck.x);
@@ -270,8 +292,12 @@
       }
       function drawRiver(){
         const width=riverCanvas.clientWidth,height=riverCanvas.clientHeight; riverContext.clearRect(0,0,width,height); fitImage(riverContext,imageField.visual||riverImage,width,height,.97);
-        const densePopulation=ducks.length>16;
+        const densePopulation=populationMode||ducks.length>16;
         if(densePopulation){riverContext.save();riverContext.globalCompositeOperation='lighter';}
+        if(populationMode){
+          const mean=populationCount/populationBins.length;
+          populationBins.forEach((count,index)=>{if(count<=0)return;const angle=index/populationBins.length*TAU,point=ringPoint(angle),screen=toCanvasPoint(point.x,point.y,width,height),intensity=Math.min(1,count/(mean||1));riverContext.fillStyle=`rgba(255,212,90,${Math.max(.025,Math.min(.3,.035*intensity))})`;riverContext.beginPath();riverContext.arc(screen.x,screen.y,3+7*Math.sqrt(intensity),0,TAU);riverContext.fill();});
+        }
         const showDucks=ducks.length<=64;
         ducks.forEach(duck=>{
           if(showDucks)duck.history.forEach((past,index)=>{const a=index/duck.history.length*.43;const point=toCanvasPoint(past.x,past.y,width,height);riverContext.fillStyle=`rgba(255,159,67,${a})`;riverContext.beginPath();riverContext.arc(point.x,point.y,2.1,0,TAU);riverContext.fill();});
@@ -284,7 +310,8 @@
       function drawDensity(){
         const width=densityCanvas.clientWidth,height=densityCanvas.clientHeight; densityContext.clearRect(0,0,width,height);
         const left=18,right=width-10,top=12,bottom=height-20,raw=new Float32Array(densityBins),values=new Float32Array(densityBins);
-        ducks.forEach(duck=>{const bin=Math.floor(wrapAngle(Math.atan2(duck.y,duck.x))/TAU*densityBins)%densityBins;raw[bin]+=1;});
+        if(populationMode)populationBins.forEach((count,index)=>{raw[Math.floor(index/populationBins.length*densityBins)]+=count;});
+        else ducks.forEach(duck=>{const bin=Math.floor(wrapAngle(Math.atan2(duck.y,duck.x))/TAU*densityBins)%densityBins;raw[bin]+=1;});
         const kernel=[1,2,3,4,3,2,1],kernelTotal=16;
         for(let i=0;i<densityBins;i++){for(let offset=-3;offset<=3;offset++)values[i]+=raw[(i+offset+densityBins)%densityBins]*kernel[offset+3]/kernelTotal;densityAverage[i]=densityAverageReady?densityAverage[i]*.996+values[i]*.004:values[i];}
         densityAverageReady=true;
